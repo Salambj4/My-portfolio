@@ -42,15 +42,4 @@ h2 {
   color: #1e3a8a;
   border-bottom: 2px solid #ddd;
   padding-bottom: 5px;
-}
-.contact {
-  max-width: 900px;
-  text-align: center;
-  margin: 20px auto;
-  border-radius: 12px;
-}
-.contact a {
-  color: #1e3a8a;
-  text-decoration: none;
-  font-weight: bold;
-}
+
