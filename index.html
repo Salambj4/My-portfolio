@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Salam Agbaje - Portfolio</title>
   <style>
+    html {
+    scroll-behavior: smooth;
+    }
+    @media (max-width: 600px) {
+  section, .contact {
+    margin: 10px;
+    padding: 10px;
+  }
+  header h1 {
+    font-size: 1.5rem;
+  }
+  nav a {
+    display: block;
+    margin: 10px 0;
+  }
+  }
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -12,20 +28,21 @@
       background: hwb(221 34% 14%);
       color: #333;
     }
-nav {
-  margin-top: 15px;
-}
 
-nav a {
-  margin: 0 15px;
-  text-decoration: none;
-  color: white;
-  font-weight: bold;
-}
-
-nav a:hover {
-  text-decoration: underline;
-}
+    nav {
+      margin-top: 15px;
+    }
+    
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+    }
+    
+    nav a:hover {
+      text-decoration: underline;
+    }
     header {
       background: #1e3a8a;
       color: white;
@@ -136,10 +153,17 @@ nav a:hover {
     <h2>Contact</h2>
     <p>Email: <a href="mailto:Salambolaji01@gmail.com">Salambolaji01@gmail.com</a></p>
     <p>Phone: 07456657128</p>
+    <form>
+  <input type="text" name="name" placeholder="Your Name" required>
+  <input type="email" name="email" placeholder="Your Email" required>
+  <textarea name="message" placeholder="Your Message" required></textarea>
+  <button type="submit">Send</button>
+</form>
   </section>
 
 </body>
 </html>
+
 
 
 
