@@ -44,7 +44,7 @@ section {
   max-width: 900px;
   margin: 40px auto;
   padding: 20px;
-  background-color: #222; /* Dark grey for contrast */
+  background-color: #222;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
