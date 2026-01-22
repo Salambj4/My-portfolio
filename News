@@ -303,6 +303,168 @@ footer {
 }
 
 
+CREATE TABLE bookings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(100),
+  service VARCHAR(50),
+  date DATE,
+  notes TEXT
+);
+
+
+
+<?php
+include "db.php";
+
+if (isset($_POST["submit"])) {
+  $name = $_POST["name"];
+  $email = $_POST["email"];
+  $service = $_POST["service"];
+  $date = $_POST["date"];
+  $notes = $_POST["notes"];
+
+  $query = "INSERT INTO bookings (name,email,service,date,notes)
+            VALUES ('$name','$email','$service','$date','$notes')";
+
+  mysqli_query($conn, $query);
+  $msg = "Booking successfully submitted!";
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Booking</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<?php include "header.php"; ?>
+
+<section class="intro">
+  <h2>Book Installation or Consultation</h2>
+
+  <?php if(isset($msg)) echo "<p>$msg</p>"; ?>
+
+  <form method="POST">
+
+    <input type="text" name="name" placeholder="Full Name" required>
+
+    <input type="email" name="email" placeholder="Email" required>
+
+    <select name="service" required>
+      <option value="">Choose Service</option>
+      <option value="Solar Installation">Solar Installation</option>
+      <option value="EV Charger">EV Charger Installation</option>
+      <option value="Smart Home">Smart Home System</option>
+    </select>
+
+    <input type="date" name="date" required>
+
+    <textarea name="notes" placeholder="Additional notes"></textarea>
+
+    <button name="submit" class="btn">Submit Booking</button>
+
+  </form>
+</section>
+
+<footer>© 2026 Rolsa Technologies</footer>
+</body>
+</html>
+
+
+
+
+<?php
+session_start();
+include "db.php";
+
+if (!isset($_SESSION["role"]) || $_SESSION["role"] != "admin") {
+  header("Location: login.php");
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Admin Dashboard</h2>
+
+<p>Welcome Admin</p>
+
+<div class="cards">
+  <a href="view_bookings.php" class="btn">View Bookings</a>
+  <a href="logout.php" class="btn">Logout</a>
+</div>
+
+</body>
+</html>
+
+
+
+
+<?php
+session_start();
+include "db.php";
+
+if ($_SESSION["role"] != "admin") {
+  header("Location: login.php");
+}
+
+$result = mysqli_query($conn, "SELECT * FROM bookings");
+?>
+
+<h2>Customer Bookings</h2>
+
+<table border="1" width="100%">
+<tr>
+  <th>ID</th>
+  <th>Name</th>
+  <th>Email</th>
+  <th>Service</th>
+  <th>Date</th>
+  <th>Notes</th>
+  <th>Action</th>
+</tr>
+
+<?php while($row = mysqli_fetch_assoc($result)) { ?>
+<tr>
+  <td><?php echo $row['id']; ?></td>
+  <td><?php echo $row['name']; ?></td>
+  <td><?php echo $row['email']; ?></td>
+  <td><?php echo $row['service']; ?></td>
+  <td><?php echo $row['date']; ?></td>
+  <td><?php echo $row['notes']; ?></td>
+  <td>
+    <a href="delete_booking.php?id=<?php echo $row['id']; ?>">Delete</a>
+  </td>
+</tr>
+<?php } ?>
+</table>
+
+<br>
+<a href="admin.php" class="btn">Back to Dashboard</a>
+
+
+
+
+
+<?php
+include "db.php";
+
+$id = $_GET["id"];
+mysqli_query($conn, "DELETE FROM bookings WHERE id=$id");
+
+header("Location: view_bookings.php");
+?>
+
+
+
 
 
 
