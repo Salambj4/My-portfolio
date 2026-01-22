@@ -1,0 +1,308 @@
+.nav { display:none; }
+
+/* Menu toggle button (hidden on desktop) */
+.menu-toggle {
+  display:none;                     /* show only in mobile media query */
+  position:absolute;
+  left:16px;
+  top:100%;                         /* position at the bottom edge of header */
+  margin-top:8px;                   /* small gap under the header */
+  padding:8px 12px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background: #f1f1f1;              /* same color as header background */
+  color: #111;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  z-index:1002;
+}
+
+/* Mobile behavior */
+@media (max-width: 600px) {
+
+  /* hide desktop nav */
+  .mainNav { display:none; }
+
+  /* show toggle button */
+  .menu-toggle { display:block; }
+
+  /* style the dropped mobile menu to sit under the brand */
+  .nav {
+    display:none;                   /* toggled to flex when open */
+    position:absolute;
+    top: calc(100% + 52px);         /* header height + extra - adjust if needed */
+    left: 0;
+    width: 220px;
+    flex-direction: column;
+    gap:0;
+    padding: 8px 0;
+    background:#000;
+    border-radius:0 0 8px 0;
+    box-shadow: 2px 4px 14px rgba(0,0,0,0.25);
+    z-index:1001;
+  }
+
+  /* show when JS adds .show */
+  .nav.show { display:flex; }
+
+  .nav a {
+    display:block;
+    padding:10px 16px;
+    color:aqua;
+    text-decoration:none;
+  }
+
+  /* Make cards stack to two columns on small tablet */
+  .cards { grid-template-columns:repeat(2,1fr); gap:16px; padding-top:24px; }
+
+  /* reduce brand size on tiny screens */
+  @media (max-width:350px) {
+    .brand { font-size:20px; }
+    .cards { grid-template-columns:1fr; }
+    .menu-toggle { left:12px; padding:8px 10px; }
+    .nav { width:180px; }
+  }
+}
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contact Us</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<?php include "header.php"; ?>
+
+<section class="intro">
+  <h2>Contact Rolsa Technologies</h2>
+  <p>Get in touch for consultations or enquiries.</p>
+
+  <form>
+    <input type="text" placeholder="Full Name" required>
+    <input type="email" placeholder="Email" required>
+    <textarea placeholder="Your Message"></textarea>
+    <button class="btn">Send Message</button>
+  </form>
+</section>
+
+<footer>© 2026 Rolsa Technologies</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Carbon Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<?php include "header.php"; ?>
+
+<section class="intro">
+  <h2>House Energy Usage Calculator</h2>
+  <p>Estimate your monthly electricity carbon footprint.</p>
+
+  <form>
+    <input type="number" id="units" placeholder="Monthly kWh">
+    <button type="button" onclick="calc()">Calculate</button>
+    <p id="result"></p>
+  </form>
+</section>
+
+<script>
+function calc(){
+  let u = document.getElementById("units").value;
+  let co2 = u * 0.233;
+  document.getElementById("result").innerText =
+    "Estimated CO₂: " + co2.toFixed(2) + " kg per month";
+}
+</script>
+
+<footer>© 2026 Rolsa Technologies</footer>
+</body>
+</html>
+
+
+
+<?php
+session_start();
+if ($_SESSION["role"] != "admin") {
+  header("Location: login.php");
+}
+?>
+
+<h2>Admin Dashboard</h2>
+<p>Welcome Admin</p>
+
+<ul>
+  <li>Manage Bookings</li>
+  <li>Manage Users</li>
+  <li>Manage Content</li>
+</ul>
+
+<a href="logout.php">Logout</a>
+
+
+
+function toggleMenu() {
+  const nav = document.getElementById("navMenu");
+
+  if (nav.classList.contains("show")) {
+    nav.classList.remove("show");
+  } else {
+    nav.classList.add("show");
+  }
+}
+
+function toggleAccessibility() {
+  document.body.classList.toggle("high-contrast");
+  document.body.classList.toggle("large-text");
+}
+
+
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  background: #2e7d32;
+  color: white;
+  padding: 10px;
+  position: relative;
+}
+
+.logo {
+  flex: 1;
+  text-align: center;
+}
+
+/* NAV */
+nav {
+  display: flex;
+  gap: 15px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+}
+
+/* AUTH */
+.auth a, .auth button {
+  margin-left: 10px;
+}
+
+/* HAMBURGER */
+.hamburger {
+  display: none;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* MOBILE MENU */
+@media (max-width: 600px) {
+  nav {
+    display: none;
+    flex-direction: column;
+    background: #2e7d32;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+  }
+
+  nav.show {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+  }
+}
+
+/* CONTENT */
+.intro {
+  padding: 20px;
+  text-align: center;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+.card img {
+  width: 100%;
+}
+
+/* BUTTON */
+.btn {
+  background: #2e7d32;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+/* ACCESSIBILITY */
+.high-contrast {
+  background: black;
+  color: yellow;
+}
+
+.large-text {
+  font-size: 1.2em;
+}
+
+/* FORMS */
+form {
+  max-width: 450px;
+  margin: auto;
+  padding: 20px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 8px;
+  margin: 8px 0;
+}
+
+/* FOOTER */
+footer {
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
+
+
+
+
+
