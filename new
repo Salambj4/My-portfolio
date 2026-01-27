@@ -224,7 +224,7 @@ CREATE TABLE carbon_logs (
 </head>
 <body>
 
-<h2>Carbon Footprint Calculator 🌍</h2>
+<h2>Carbon Footprint Calculator </h2>
 
 <div class="carbonBox">
 
@@ -326,7 +326,7 @@ $stmt->bind_param("iddddd",
 );
 
 if($stmt->execute()){
-    echo "Carbon footprint saved! 🌱";
+    echo "Carbon footprint saved! ";
 }else{
     echo "Database error";
 }
