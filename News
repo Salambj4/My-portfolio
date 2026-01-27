@@ -1,467 +1,602 @@
-.nav { display:none; }
+//Create a folder called eco-site.
+Inside it, create all the subfolders: config, auth, admin, public, assets.
+Inside assets, create css and js.
+Create the PHP files as listed (they can be empty for now).
+Create a file database.sql (for your database tables later).//
 
-/* Menu toggle button (hidden on desktop) */
-.menu-toggle {
-  display:none;                     /* show only in mobile media query */
-  position:absolute;
-  left:16px;
-  top:100%;                         /* position at the bottom edge of header */
-  margin-top:8px;                   /* small gap under the header */
-  padding:8px 12px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  background: #f1f1f1;              /* same color as header background */
-  color: #111;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  z-index:1002;
-}
-
-/* Mobile behavior */
-@media (max-width: 600px) {
-
-  /* hide desktop nav */
-  .mainNav { display:none; }
-
-  /* show toggle button */
-  .menu-toggle { display:block; }
-
-  /* style the dropped mobile menu to sit under the brand */
-  .nav {
-    display:none;                   /* toggled to flex when open */
-    position:absolute;
-    top: calc(100% + 52px);         /* header height + extra - adjust if needed */
-    left: 0;
-    width: 220px;
-    flex-direction: column;
-    gap:0;
-    padding: 8px 0;
-    background:#000;
-    border-radius:0 0 8px 0;
-    box-shadow: 2px 4px 14px rgba(0,0,0,0.25);
-    z-index:1001;
-  }
-
-  /* show when JS adds .show */
-  .nav.show { display:flex; }
-
-  .nav a {
-    display:block;
-    padding:10px 16px;
-    color:aqua;
-    text-decoration:none;
-  }
-
-  /* Make cards stack to two columns on small tablet */
-  .cards { grid-template-columns:repeat(2,1fr); gap:16px; padding-top:24px; }
-
-  /* reduce brand size on tiny screens */
-  @media (max-width:350px) {
-    .brand { font-size:20px; }
-    .cards { grid-template-columns:1fr; }
-    .menu-toggle { left:12px; padding:8px 10px; }
-    .nav { width:180px; }
-  }
-}
-
-
-
-
-
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Contact Us</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<?php include "header.php"; ?>
-
-<section class="intro">
-  <h2>Contact Rolsa Technologies</h2>
-  <p>Get in touch for consultations or enquiries.</p>
-
-  <form>
-    <input type="text" placeholder="Full Name" required>
-    <input type="email" placeholder="Email" required>
-    <textarea placeholder="Your Message"></textarea>
-    <button class="btn">Send Message</button>
-  </form>
-</section>
-
-<footer>© 2026 Rolsa Technologies</footer>
-
-<script src="script.js"></script>
-</body>
-</html>
-
-
-
-
-
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Carbon Calculator</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<?php include "header.php"; ?>
-
-<section class="intro">
-  <h2>House Energy Usage Calculator</h2>
-  <p>Estimate your monthly electricity carbon footprint.</p>
-
-  <form>
-    <input type="number" id="units" placeholder="Monthly kWh">
-    <button type="button" onclick="calc()">Calculate</button>
-    <p id="result"></p>
-  </form>
-</section>
-
-<script>
-function calc(){
-  let u = document.getElementById("units").value;
-  let co2 = u * 0.233;
-  document.getElementById("result").innerText =
-    "Estimated CO₂: " + co2.toFixed(2) + " kg per month";
-}
-</script>
-
-<footer>© 2026 Rolsa Technologies</footer>
-</body>
-</html>
-
-
-
+config/db.php
 <?php
-session_start();
-if ($_SESSION["role"] != "admin") {
-  header("Location: login.php");
+// Database settings
+$host = 'localhost';
+$db   = 'eco_site';
+$user = 'root';
+$pass = '';
+
+// Connect to database
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
+} catch (PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
 }
 ?>
 
-<h2>Admin Dashboard</h2>
-<p>Welcome Admin</p>
 
-<ul>
-  <li>Manage Bookings</li>
-  <li>Manage Users</li>
-  <li>Manage Content</li>
-</ul>
+database.sql
+CREATE DATABASE IF NOT EXISTS eco_site;
+USE eco_site;
 
-<a href="logout.php">Logout</a>
-
-
-
-function toggleMenu() {
-  const nav = document.getElementById("navMenu");
-
-  if (nav.classList.contains("show")) {
-    nav.classList.remove("show");
-  } else {
-    nav.classList.add("show");
-  }
-}
-
-function toggleAccessibility() {
-  document.body.classList.toggle("high-contrast");
-  document.body.classList.toggle("large-text");
-}
-
-
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
-
-/* HEADER */
-.header {
-  display: flex;
-  align-items: center;
-  background: #2e7d32;
-  color: white;
-  padding: 10px;
-  position: relative;
-}
-
-.logo {
-  flex: 1;
-  text-align: center;
-}
-
-/* NAV */
-nav {
-  display: flex;
-  gap: 15px;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-}
-
-/* AUTH */
-.auth a, .auth button {
-  margin-left: 10px;
-}
-
-/* HAMBURGER */
-.hamburger {
-  display: none;
-  font-size: 24px;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
-/* MOBILE MENU */
-@media (max-width: 600px) {
-  nav {
-    display: none;
-    flex-direction: column;
-    background: #2e7d32;
-    position: absolute;
-    top: 50px;
-    left: 0;
-    width: 100%;
-  }
-
-  nav.show {
-    display: flex;
-  }
-
-  .hamburger {
-    display: block;
-  }
-}
-
-/* CONTENT */
-.intro {
-  padding: 20px;
-  text-align: center;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
-  gap: 15px;
-  padding: 20px;
-}
-
-.card img {
-  width: 100%;
-}
-
-/* BUTTON */
-.btn {
-  background: #2e7d32;
-  color: white;
-  padding: 10px 20px;
-  text-decoration: none;
-  border-radius: 5px;
-}
-
-/* ACCESSIBILITY */
-.high-contrast {
-  background: black;
-  color: yellow;
-}
-
-.large-text {
-  font-size: 1.2em;
-}
-
-/* FORMS */
-form {
-  max-width: 450px;
-  margin: auto;
-  padding: 20px;
-}
-
-input, textarea, select {
-  width: 100%;
-  padding: 8px;
-  margin: 8px 0;
-}
-
-/* FOOTER */
-footer {
-  background: #333;
-  color: white;
-  text-align: center;
-  padding: 10px;
-}
-
-
-CREATE TABLE bookings (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100),
-  email VARCHAR(100),
-  service VARCHAR(50),
-  date DATE,
-  notes TEXT
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('user','admin') DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
 
+auth/register.php
 <?php
-include "db.php";
+require_once '../config/db.php'; // Connect to DB
 
-if (isset($_POST["submit"])) {
-  $name = $_POST["name"];
-  $email = $_POST["email"];
-  $service = $_POST["service"];
-  $date = $_POST["date"];
-  $notes = $_POST["notes"];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Secure hashing
 
-  $query = "INSERT INTO bookings (name,email,service,date,notes)
-            VALUES ('$name','$email','$service','$date','$notes')";
-
-  mysqli_query($conn, $query);
-  $msg = "Booking successfully submitted!";
+    // Check if username/email already exists
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
+    $stmt->execute([$username, $email]);
+    if ($stmt->rowCount() > 0) {
+        echo "Username or email already exists!";
+    } else {
+        $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+        if ($stmt->execute([$username, $email, $password])) {
+            echo "Registration successful! You can now <a href='login.php'>login</a>.";
+        } else {
+            echo "Registration failed!";
+        }
+    }
 }
+?>
+
+<!-- Simple HTML form -->
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" required><br>
+    <input type="email" name="email" placeholder="Email" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
+    <button type="submit">Register</button>
+</form>
+
+
+
+auth/login.php
+<?php
+session_start();
+require_once '../config/db.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    $user = $stmt->fetch();
+
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];
+        header("Location: ../admin/dashboard.php"); // Redirect to admin/dashboard
+        exit;
+    } else {
+        echo "Invalid username or password!";
+    }
+}
+?>
+
+<!-- Simple HTML form -->
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+</form>
+
+
+
+
+auth/logout.php
+<?php
+session_start();
+session_unset();
+session_destroy();
+header("Location: login.php");
+exit;
+?>
+
+
+
+
+admin/dashboard.php
+<?php
+session_start();
+require_once '../config/db.php';
+
+// Protect page: only admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../auth/login.php");
+    exit;
+}
+
+// Fetch some info for dashboard
+$stmt = $pdo->query("SELECT COUNT(*) AS total_users FROM users");
+$total_users = $stmt->fetch()['total_users'];
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Booking</title>
-  <link rel="stylesheet" href="style.css">
+    <title>Admin Dashboard</title>
 </head>
 <body>
+    <h1>Welcome, <?= $_SESSION['username']; ?> (Admin)</h1>
+    <p>Total users: <?= $total_users; ?></p>
 
-<?php include "header.php"; ?>
+    <a href="../auth/logout.php">Logout</a>
+</body>
+</html>
 
-<section class="intro">
-  <h2>Book Installation or Consultation</h2>
 
-  <?php if(isset($msg)) echo "<p>$msg</p>"; ?>
 
-  <form method="POST">
+admin/users.php
+<?php
+session_start();
+require_once '../config/db.php';
 
-    <input type="text" name="name" placeholder="Full Name" required>
+// Protect page: only admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../auth/login.php");
+    exit;
+}
 
-    <input type="email" name="email" placeholder="Email" required>
+// Fetch all users
+$stmt = $pdo->query("SELECT id, username, email, role, created_at FROM users");
+$users = $stmt->fetchAll();
+?>
 
-    <select name="service" required>
-      <option value="">Choose Service</option>
-      <option value="Solar Installation">Solar Installation</option>
-      <option value="EV Charger">EV Charger Installation</option>
-      <option value="Smart Home">Smart Home System</option>
-    </select>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Users</title>
+</head>
+<body>
+    <h1>All Users</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Created At</th>
+        </tr>
+        <?php foreach($users as $user): ?>
+            <tr>
+                <td><?= $user['id']; ?></td>
+                <td><?= $user['username']; ?></td>
+                <td><?= $user['email']; ?></td>
+                <td><?= $user['role']; ?></td>
+                <td><?= $user['created_at']; ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
 
-    <input type="date" name="date" required>
-
-    <textarea name="notes" placeholder="Additional notes"></textarea>
-
-    <button name="submit" class="btn">Submit Booking</button>
-
-  </form>
-</section>
-
-<footer>© 2026 Rolsa Technologies</footer>
+    <a href="dashboard.php">Back to Dashboard</a>
 </body>
 </html>
 
 
 
 
+database.sql
+CREATE TABLE IF NOT EXISTS calculator_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    energy_consumption FLOAT,
+    transport_miles FLOAT,
+    food_impact FLOAT,
+    total_carbon FLOAT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+
+
+
+public/calculator.php
 <?php
 session_start();
-include "db.php";
+require_once '../config/db.php';
 
-if (!isset($_SESSION["role"]) || $_SESSION["role"] != "admin") {
-  header("Location: login.php");
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../auth/login.php");
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $energy = $_POST['energy'];
+    $transport = $_POST['transport'];
+    $food = $_POST['food'];
+
+    // Simple carbon formula
+    $total = $energy * 0.5 + $transport * 0.8 + $food * 0.3;
+
+    // Insert into DB
+    $stmt = $pdo->prepare("INSERT INTO calculator_logs (user_id, energy_consumption, transport_miles, food_impact, total_carbon) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([$_SESSION['user_id'], $energy, $transport, $food, $total]);
+
+    $message = "Your estimated carbon footprint is: $total kg CO2";
 }
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+    <title>Carbon Calculator</title>
 </head>
 <body>
+    <h1>Carbon Calculator</h1>
 
-<h2>Admin Dashboard</h2>
+    <?php if (isset($message)) echo "<p>$message</p>"; ?>
 
-<p>Welcome Admin</p>
+    <form method="POST">
+        <label>Energy Consumption (kWh per month):</label><br>
+        <input type="number" name="energy" step="0.1" required><br>
 
-<div class="cards">
-  <a href="view_bookings.php" class="btn">View Bookings</a>
-  <a href="logout.php" class="btn">Logout</a>
-</div>
+        <label>Transport Miles per week:</label><br>
+        <input type="number" name="transport" step="0.1" required><br>
 
+        <label>Food Impact (estimated):</label><br>
+        <input type="number" name="food" step="0.1" required><br>
+
+        <button type="submit">Calculate</button>
+    </form>
+
+    <script>
+        // Optional: Live calculation without reload
+        const energyInput = document.querySelector('[name="energy"]');
+        const transportInput = document.querySelector('[name="transport"]');
+        const foodInput = document.querySelector('[name="food"]');
+
+        const result = document.createElement('p');
+        document.body.insertBefore(result, document.querySelector('form'));
+
+        function updateResult() {
+            const e = parseFloat(energyInput.value) || 0;
+            const t = parseFloat(transportInput.value) || 0;
+            const f = parseFloat(foodInput.value) || 0;
+            const total = e * 0.5 + t * 0.8 + f * 0.3;
+            result.textContent = `Estimated Carbon Footprint: ${total.toFixed(2)} kg CO2`;
+        }
+
+        energyInput.addEventListener('input', updateResult);
+        transportInput.addEventListener('input', updateResult);
+        foodInput.addEventListener('input', updateResult);
+    </script>
 </body>
 </html>
 
 
 
 
+admin/calculator_logs.php
 <?php
 session_start();
-include "db.php";
+require_once '../config/db.php';
 
-if ($_SESSION["role"] != "admin") {
-  header("Location: login.php");
+// Protect page: only admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../auth/login.php");
+    exit;
 }
 
-$result = mysqli_query($conn, "SELECT * FROM bookings");
+// Fetch calculator logs with user info
+$stmt = $pdo->query("
+    SELECT c.id, u.username, c.energy_consumption, c.transport_miles, c.food_impact, c.total_carbon, c.created_at
+    FROM calculator_logs c
+    JOIN users u ON c.user_id = u.id
+    ORDER BY c.created_at DESC
+");
+$logs = $stmt->fetchAll();
 ?>
 
-<h2>Customer Bookings</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator Logs</title>
+</head>
+<body>
+    <h1>All Calculator Logs</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Energy (kWh)</th>
+            <th>Transport (miles)</th>
+            <th>Food Impact</th>
+            <th>Total Carbon (kg CO2)</th>
+            <th>Submitted At</th>
+        </tr>
+        <?php foreach($logs as $log): ?>
+        <tr>
+            <td><?= $log['id']; ?></td>
+            <td><?= $log['username']; ?></td>
+            <td><?= $log['energy_consumption']; ?></td>
+            <td><?= $log['transport_miles']; ?></td>
+            <td><?= $log['food_impact']; ?></td>
+            <td><?= $log['total_carbon']; ?></td>
+            <td><?= $log['created_at']; ?></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
 
-<table border="1" width="100%">
-<tr>
-  <th>ID</th>
-  <th>Name</th>
-  <th>Email</th>
-  <th>Service</th>
-  <th>Date</th>
-  <th>Notes</th>
-  <th>Action</th>
-</tr>
+    <a href="dashboard.php">Back to Dashboard</a>
+</body>
+</html>
 
-<?php while($row = mysqli_fetch_assoc($result)) { ?>
-<tr>
-  <td><?php echo $row['id']; ?></td>
-  <td><?php echo $row['name']; ?></td>
-  <td><?php echo $row['email']; ?></td>
-  <td><?php echo $row['service']; ?></td>
-  <td><?php echo $row['date']; ?></td>
-  <td><?php echo $row['notes']; ?></td>
-  <td>
-    <a href="delete_booking.php?id=<?php echo $row['id']; ?>">Delete</a>
-  </td>
-</tr>
-<?php } ?>
-</table>
 
-<br>
-<a href="admin.php" class="btn">Back to Dashboard</a>
+
+database.sql
+CREATE TABLE IF NOT EXISTS contact_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 
 
 
 
-
+public/contact.php
 <?php
-include "db.php";
+session_start();
+require_once '../config/db.php';
 
-$id = $_GET["id"];
-mysqli_query($conn, "DELETE FROM bookings WHERE id=$id");
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $user_id = $_SESSION['user_id'] ?? null;
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $message = $_POST['message'];
 
-header("Location: view_bookings.php");
+    $stmt = $pdo->prepare("INSERT INTO contact_messages (user_id, name, email, message) VALUES (?, ?, ?, ?)");
+    if ($stmt->execute([$user_id, $name, $email, $message])) {
+        $success = "Message sent successfully!";
+    } else {
+        $error = "Failed to send message.";
+    }
+}
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Us</title>
+</head>
+<body>
+    <h1>Contact Us</h1>
+
+    <?php if(isset($success)) echo "<p style='color:green;'>$success</p>"; ?>
+    <?php if(isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
+
+    <form method="POST">
+        <input type="text" name="name" placeholder="Your Name" required><br>
+        <input type="email" name="email" placeholder="Your Email" required><br>
+        <textarea name="message" placeholder="Your Message" required></textarea><br>
+        <button type="submit">Send</button>
+    </form>
+</body>
+</html>
+
+
+
+
+admin/contact_logs.php
+<?php
+session_start();
+require_once '../config/db.php';
+
+// Protect page: only admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../auth/login.php");
+    exit;
+}
+
+// Fetch messages with user info if available
+$stmt = $pdo->query("
+    SELECT c.id, u.username, c.name, c.email, c.message, c.created_at
+    FROM contact_messages c
+    LEFT JOIN users u ON c.user_id = u.id
+    ORDER BY c.created_at DESC
+");
+$messages = $stmt->fetchAll();
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact Messages</title>
+</head>
+<body>
+    <h1>Contact Messages</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Message</th>
+            <th>Submitted At</th>
+        </tr>
+        <?php foreach($messages as $msg): ?>
+        <tr>
+            <td><?= $msg['id']; ?></td>
+            <td><?= $msg['username'] ?? 'Guest'; ?></td>
+            <td><?= $msg['name']; ?></td>
+            <td><?= $msg['email']; ?></td>
+            <td><?= $msg['message']; ?></td>
+            <td><?= $msg['created_at']; ?></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+
+    <a href="dashboard.php">Back to Dashboard</a>
+</body>
+</html>
+
+
+
+
+
+public/accessibility.php
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Accessibility Settings</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body.dyslexia { font-family: "OpenDyslexic", Arial, sans-serif; }
+        body.high-contrast { background-color: black; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Accessibility Settings</h1>
+
+    <!-- Text Size -->
+    <button onclick="document.body.style.fontSize='16px'">Normal Text</button>
+    <button onclick="document.body.style.fontSize='20px'">Large Text</button>
+    <button onclick="document.body.style.fontSize='24px'">Extra Large Text</button>
+
+    <!-- Contrast Toggle -->
+    <button onclick="document.body.classList.toggle('high-contrast')">Toggle High Contrast</button>
+
+    <!-- Dyslexia Font -->
+    <button onclick="document.body.classList.toggle('dyslexia')">Toggle Dyslexia Font</button>
+
+    <!-- Keyboard navigation note -->
+    <p>Use Tab key to navigate through links and buttons.</p>
+</body>
+</html>
+
+/* Basic body font */
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* High contrast mode */
+body.high-contrast {
+    background-color: black;
+    color: white;
+}
+
+/* Dyslexia-friendly font */
+body.dyslexia {
+    font-family: "OpenDyslexic", Arial, sans-serif;
+}
+
+/* Buttons styling */
+button {
+    padding: 8px 12px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+
+
+
+
+
+/* Mobile first (default) */
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0 10px;
+}
+
+/* Tables scrollable on small screens */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+table th, table td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ccc;
+}
+table {
+    display: block;
+    overflow-x: auto;
+}
+
+/* Buttons full width on small screens */
+button {
+    width: 100%;
+    margin: 5px 0;
+}
+
+/* Medium screens (tablet) */
+@media (min-width: 600px) {
+    body {
+        padding: 0 20px;
+        font-size: 18px;
+    }
+    button {
+        width: auto;
+    }
+}
+
+/* Large screens (desktop) */
+@media (min-widt
+
+
+
+
+
+/* Admin dashboard container */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Dashboard table scroll */
+table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Responsive nav (if you add menus later) */
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+nav li {
+    display: inline-block;
+    margin-right: 10px;
+}
+@media (max-width: 600px) {
+    nav li {
+        display: block;
+        margin: 5px 0;
+    }
+}
+
 
 
 
