@@ -1,482 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Rolsa Technologies</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<!-- HEADER / NAV -->
-<header class="header">
-  <button class="hamburger" onclick="toggleMenu()">☰</button>
-
-  <h1 class="logo">Rolsa Technologies</h1>
-
-  <nav id="navMenu">
-    <a href="#">Green Energy</a>
-    <a href="#">Carbon Footprint</a>
-    <a href="#">Contact Us</a>
-  </nav>
-
-  <div class="auth">
-    <a href="login.php">Login</a>
-    <a href="register.php">Register</a>
-    <button onclick="toggleAccessibility()">Accessibility</button>
-  </div>
-</header>
-
-<!-- MAIN CONTENT -->
-<main>
-
-  <!-- INTRO -->
-  <section class="intro">
-    <h2>What is Green Energy?</h2>
-    <p>
-      Green energy is energy generated from natural, renewable sources such as
-      solar, wind and hydro power. These energy sources reduce carbon emissions
-      and help protect the environment.
-    </p>
-  </section>
-
-  <!-- BOOKING -->
-  <section class="booking">
-    <h3>Schedule Consultations & Installations</h3>
-    <a href="booking.php" class="btn">Book Now</a>
-  </section>
-
-  <!-- PRODUCT CARDS -->
-  <section class="cards">
-    <div class="card">
-      <img src="solar-home.jpg" alt="Solar panels for homes">
-      <p>Solar Panels for Homes</p>
-    </div>
-
-    <div class="card">
-      <img src="solar-office.jpg" alt="Solar panels for offices">
-      <p>Solar Panels for Offices</p>
-    </div>
-
-    <div class="card">
-      <img src="ev.jpg" alt="Electric vehicle charging station">
-      <p>EV Charging Stations</p>
-    </div>
-
-    <div class="card">
-      <img src="smart-home.jpg" alt="Smart home energy system">
-      <p>Smart Home Energy Systems</p>
-    </div>
-  </section>
-
-</main>
-
-<!-- FOOTER -->
-<footer>
-  <p>© 2026 Rolsa Technologies | Green Energy Solutions</p>
-</footer>
-
-<script src="script.js"></script>
-</body>
-</html>
-
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
-
-/* HEADER */
-.header {
-  display: flex;
-  align-items: center;
-  background: #2e7d32;
-  color: white;
-  padding: 10px;
-}
-
-.logo {
-  flex: 1;
-}
-
-/* NAV */
-nav a {
-  color: white;
-  margin: 0 10px;
-  text-decoration: none;
-}
-
-/* AUTH LINKS */
-.auth a, .auth button {
-  margin-left: 10px;
-}
-
-/* HAMBURGER */
-.hamburger {
-  display: none;
-  font-size: 24px;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
-/* MAIN */
-.intro, .booking {
-  padding: 20px;
-  text-align: center;
-}
-
-.btn {
-  background: #2e7d32;
-  color: white;
-  padding: 10px 20px;
-  text-decoration: none;
-}
-
-/* CARDS */
-.cards {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.card {
-  margin: 10px;
-  text-align: center;
-}
-
-.card img {
-  width: 200px;
-  height: auto;
-}
-
-/* FOOTER */
-footer {
-  background: #333;
-  color: white;
-  text-align: center;
-  padding: 10px;
-}
-
-/* ACCESSIBILITY */
-.high-contrast {
-  background: black;
-  color: yellow;
-}
-
-.large-text {
-  font-size: 1.2em;
-}
-
-/* RESPONSIVE */
-@media (max-width: 600px) {
-  nav {
-    display: none;
-    flex-direction: column;
-    background: #2e7d32;
-  }
-
-  nav a {
-    padding: 10px;
-  }
-
-  .hamburger {
-    display: block;
-    margin-right: 10px;
-  }
-}
-
-
-function toggleMenu() {
-  const nav = document.getElementById("navMenu");
-  nav.style.display = nav.style.display === "flex" ? "none" : "flex";
-}
-
-function toggleAccessibility() {
-  document.body.classList.toggle("high-contrast");
-  document.body.classList.toggle("large-text");
-}
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Carbon Footprint | Rolsa Technologies</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<header class="header">
-  <button class="hamburger" onclick="toggleMenu()">☰</button>
-  <h1 class="logo">Rolsa Technologies</h1>
-
-  <nav id="navMenu">
-    <a href="index.html">Green Energy</a>
-    <a href="carbon.html">Carbon Footprint</a>
-    <a href="contact.html">Contact Us</a>
-  </nav>
-</header>
-
-<main>
-
-  <!-- GREEN ENERGY INFO -->
-  <section class="intro">
-    <h2>Green Energy & Carbon Reduction</h2>
-    <p>
-      Green energy reduces reliance on fossil fuels and lowers carbon emissions.
-      By monitoring your energy usage, you can take steps to reduce your
-      environmental impact.
-    </p>
-  </section>
-
-  <!-- HOUSEHOLD CALCULATOR -->
-  <section class="calculator">
-    <h3>Household Carbon Footprint</h3>
-
-    <label>Electricity usage (kWh per month)</label>
-    <input type="number" id="electricity">
-
-    <label>Gas usage (kWh per month)</label>
-    <input type="number" id="gas">
-
-    <button onclick="calculateHouse()">Calculate</button>
-
-    <p id="houseResult"></p>
-  </section>
-
-  <!-- VEHICLE CALCULATOR -->
-  <section class="calculator">
-    <h3>Vehicle Carbon Footprint</h3>
-
-    <label>Miles driven per month</label>
-    <input type="number" id="miles">
-
-    <label>Vehicle MPG</label>
-    <input type="number" id="mpg">
-
-    <button onclick="calculateVehicle()">Calculate</button>
-
-    <p id="vehicleResult"></p>
-  </section>
-
-</main>
-
-<footer>
-  <p>© 2026 Rolsa Technologies</p>
-</footer>
-
-<script src="script.js"></script>
-</body>
-</html>
-
-
-.calculator {
-  max-width: 400px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-}
-
-.calculator input {
-  width: 100%;
-  padding: 8px;
-  margin: 5px 0 10px;
-}
-
-.calculator button {
-  background: #2e7d32;
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-}
-function calculateHouse() {
-  const electricity = document.getElementById("electricity").value;
-  const gas = document.getElementById("gas").value;
-
-  const electricityCO2 = electricity * 0.233;
-  const gasCO2 = gas * 0.184;
-
-  const total = electricityCO2 + gasCO2;
-
-  document.getElementById("houseResult").innerText =
-    "Estimated monthly CO₂: " + total.toFixed(2) + " kg";
-}
-
-function calculateVehicle() {
-  const miles = document.getElementById("miles").value;
-  const mpg = document.getElementById("mpg").value;
-
-  const fuelUsed = miles / mpg;
-  const vehicleCO2 = fuelUsed * 8.89;
-
-  document.getElementById("vehicleResult").innerText =
-    "Estimated monthly CO₂: " + vehicleCO2.toFixed(2) + " kg";
-}
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Book a Service | Rolsa Technologies</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<header class="header">
-  <button class="hamburger" onclick="toggleMenu()">☰</button>
-  <h1 class="logo">Rolsa Technologies</h1>
-
-  <nav id="navMenu">
-    <a href="index.html">Green Energy</a>
-    <a href="carbon.html">Carbon Footprint</a>
-    <a href="contact.html">Contact Us</a>
-  </nav>
-</header>
-
-<main>
-
-  <section class="intro">
-    <h2>Schedule a Consultation or Installation</h2>
-    <p>
-      Book a consultation or installation with our green energy specialists.
-      Select the service you need and choose a suitable date.
-    </p>
-  </section>
-
-  <section class="booking-form">
-    <form action="booking.php" method="POST">
-
-      <label for="service">Select Service</label>
-      <select id="service" name="service" required>
-        <option value="">-- Choose a service --</option>
-        <option value="solar">Solar Panel Installation</option>
-        <option value="ev">EV Charging Station</option>
-        <option value="smart">Smart Home Energy System</option>
-      </select>
-
-      <label for="date">Preferred Date</label>
-      <input type="date" id="date" name="date" required>
-
-      <label for="name">Full Name</label>
-      <input type="text" id="name" name="name" required>
-
-      <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" required>
-
-      <label for="notes">Additional Notes</label>
-      <textarea id="notes" name="notes"></textarea>
-
-      <button type="submit" class="btn">Submit Booking</button>
-
-    </form>
-  </section>
-
-</main>
-
-<footer>
-  <p>© 2026 Rolsa Technologies</p>
-</footer>
-
-<script src="script.js"></script>
-</body>
-</html>
-
-
-
-
-.booking-form {
-  max-width: 500px;
-  margin: 30px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-}
-
-.booking-form label {
-  display: block;
-  margin-top: 10px;
-}
-
-.booking-form input,
-.booking-form select,
-.booking-form textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-}
-
-.booking-form textarea {
-  height: 80px;
-}
-
-
-
+CREATE DATABASE eco_site;
+USE eco_site;
 
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100),
-  email VARCHAR(100),
-  password VARCHAR(100),
-  role VARCHAR(10)
+  email VARCHAR(120) UNIQUE,
+  password VARCHAR(255),
+  role ENUM('user','admin') DEFAULT 'user',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE contacts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(120),
+  message TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
 
-<?php
-$conn = mysqli_connect("localhost", "root", "", "rolsa");
 
-if (!$conn) {
-  die("Database connection failed");
+<?php
+
+$host = "localhost";
+$user = "root";
+$pass = "usbw";
+$db   = "eco_site";
+
+$conn = new mysqli($host, $user, $pass, $db);
+
+if ($conn->connect_error) {
+    die("Database connection failed: " . $conn->connect_error);
 }
+
 ?>
 
 
 
 
-<?php
-include "db.php";
 
-if (isset($_POST["register"])) {
-  $name = $_POST["name"];
-  $email = $_POST["email"];
-  $password = $_POST["password"];
-  $role = "user";
-
-  $query = "INSERT INTO users (name, email, password, role)
-            VALUES ('$name', '$email', '$password', '$role')";
-
-  mysqli_query($conn, $query);
-  echo "Registration successful!";
-}
-?>
-
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
 <head>
   <title>Register</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 
 <h2>Create Account</h2>
 
-<form method="POST">
-  <label>Name</label>
-  <input type="text" name="name" required>
-
-  <label>Email</label>
-  <input type="email" name="email" required>
-
-  <label>Password</label>
-  <input type="password" name="password" required>
-
-  <button type="submit" name="register">Register</button>
+<form action="../actions/register.php" method="POST">
+  <input type="text" name="name" placeholder="Full name" required>
+  <input type="email" name="email" placeholder="Email" required>
+  <input type="password" name="password" placeholder="Password" required>
+  <button>Create Account</button>
 </form>
 
 </body>
@@ -487,47 +66,41 @@ if (isset($_POST["register"])) {
 
 
 <?php
-session_start();
-include "db.php";
+require "../config/db.php";
 
-if (isset($_POST["login"])) {
-  $email = $_POST["email"];
-  $password = $_POST["password"];
+$name = $_POST['name'];
+$email = $_POST['email'];
+$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-  $query = "SELECT * FROM users WHERE email='$email' AND password='$password'";
-  $result = mysqli_query($conn, $query);
+$stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+$stmt->bind_param("sss", $name, $email, $password);
 
-  if (mysqli_num_rows($result) == 1) {
-    $user = mysqli_fetch_assoc($result);
-
-    $_SESSION["user"] = $user["name"];
-    $_SESSION["role"] = $user["role"];
-
-    header("Location: dashboard.php");
-  } else {
-    echo "Invalid login details";
-  }
+if ($stmt->execute()) {
+  header("Location: ../public/login.php");
+} else {
+  echo "Registration failed";
 }
 ?>
 
+
+
+
+
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html>
 <head>
   <title>Login</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 
 <h2>Login</h2>
 
-<form method="POST">
-  <label>Email</label>
-  <input type="email" name="email" required>
-
-  <label>Password</label>
-  <input type="password" name="password" required>
-
-  <button type="submit" name="login">Login</button>
+<form action="../actions/login.php" method="POST">
+  <input type="email" name="email" placeholder="Email" required>
+  <input type="password" name="password" placeholder="Password" required>
+  <button>Login</button>
 </form>
 
 </body>
@@ -539,33 +112,35 @@ if (isset($_POST["login"])) {
 
 <?php
 session_start();
+require "../config/db.php";
 
-if (!isset($_SESSION["user"])) {
-  header("Location: login.php");
+$email = $_POST['email'];
+$password = $_POST['password'];
+
+$stmt = $conn->prepare("SELECT * FROM users WHERE email=?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+
+$result = $stmt->get_result();
+
+if ($user = $result->fetch_assoc()) {
+  if (password_verify($password, $user['password'])) {
+    $_SESSION['user'] = $user;
+
+    if ($user['role'] == 'admin') {
+      header("Location: ../public/dashboard.php");
+    } else {
+      header("Location: ../public/index.php");
+    }
+  } else {
+    echo "Invalid password";
+  }
+} else {
+  echo "User not found";
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Dashboard</title>
-</head>
-<body>
 
-<h2>Welcome, <?php echo $_SESSION["user"]; ?></h2>
-
-<p>You are logged in.</p>
-
-<?php
-if ($_SESSION["role"] == "admin") {
-  echo "<p><strong>Admin access enabled</strong></p>";
-}
-?>
-
-<a href="logout.php">Logout</a>
-
-</body>
-</html>
 
 
 
@@ -573,6 +148,262 @@ if ($_SESSION["role"] == "admin") {
 <?php
 session_start();
 session_destroy();
-header("Location: login.php");
+header("Location: ../public/index.php");
 ?>
+
+
+
+
+
+
+
+<?php
+session_start();
+require "../config/db.php";
+
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+  die("Access denied");
+}
+
+$users = $conn->query("SELECT id,name,email,role FROM users");
+$contacts = $conn->query("SELECT * FROM contacts ORDER BY created_at DESC");
+?>
+
+<h2>Admin Dashboard</h2>
+
+<h3>Users</h3>
+<table border="1">
+<tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th></tr>
+<?php while($u = $users->fetch_assoc()): ?>
+<tr>
+  <td><?= $u['id'] ?></td>
+  <td><?= $u['name'] ?></td>
+  <td><?= $u['email'] ?></td>
+  <td><?= $u['role'] ?></td>
+</tr>
+<?php endwhile; ?>
+</table>
+
+<h3>Contact Messages</h3>
+<table border="1">
+<tr><th>Name</th><th>Email</th><th>Message</th><th>Date</th></tr>
+<?php while($c = $contacts->fetch_assoc()): ?>
+<tr>
+  <td><?= $c['name'] ?></td>
+  <td><?= $c['email'] ?></td>
+  <td><?= $c['message'] ?></td>
+  <td><?= $c['created_at'] ?></td>
+</tr>
+<?php endwhile; ?>
+</table>
+
+
+
+
+CREATE TABLE carbon_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  transport FLOAT,
+  electricity FLOAT,
+  gas FLOAT,
+  flights FLOAT,
+  total FLOAT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carbon Footprint Calculator</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+<h2>Carbon Footprint Calculator 🌍</h2>
+
+<div class="carbonBox">
+
+  <label>Car miles per month</label>
+  <input type="range" min="0" max="2000" value="0" id="transport">
+  <span id="transportVal">0</span> miles
+
+  <label>Electricity (kWh per month)</label>
+  <input type="range" min="0" max="800" value="0" id="electricity">
+  <span id="electricityVal">0</span> kWh
+
+  <label>Gas (kWh per month)</label>
+  <input type="range" min="0" max="1000" value="0" id="gas">
+  <span id="gasVal">0</span> kWh
+
+  <label>Flights per year</label>
+  <input type="range" min="0" max="10" value="0" id="flights">
+  <span id="flightsVal">0</span> flights
+
+  <h3>Your Carbon Footprint:</h3>
+  <h1><span id="result">0</span> kg CO₂ / month</h1>
+
+  <button onclick="saveCarbon()">Save Result</button>
+
+</div>
+
+<script src="../assets/js/carbon.js"></script>
+
+</body>
+</html>
+
+
+
+
+
+
+const transport = document.getElementById("transport");
+const electricity = document.getElementById("electricity");
+const gas = document.getElementById("gas");
+const flights = document.getElementById("flights");
+
+const result = document.getElementById("result");
+
+function calculate(){
+
+  document.getElementById("transportVal").innerText = transport.value;
+  document.getElementById("electricityVal").innerText = electricity.value;
+  document.getElementById("gasVal").innerText = gas.value;
+  document.getElementById("flightsVal").innerText = flights.value;
+
+  let transportCO2 = transport.value * 0.21;
+  let electricityCO2 = electricity.value * 0.23;
+  let gasCO2 = gas.value * 0.184;
+  let flightsCO2 = (flights.value * 250) / 12;
+
+  let total = transportCO2 + electricityCO2 + gasCO2 + flightsCO2;
+
+  result.innerText = total.toFixed(2);
+}
+
+document.querySelectorAll("input").forEach(i => {
+  i.addEventListener("input", calculate);
+});
+
+calculate();
+
+function saveCarbon(){
+  fetch("../actions/save_carbon.php",{
+    method:"POST",
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body:`transport=${transport.value}&electricity=${electricity.value}&gas=${gas.value}&flights=${flights.value}&total=${result.innerText}`
+  })
+  .then(res=>res.text())
+  .then(data=>alert(data));
+}
+
+
+
+
+
+<?php
+session_start();
+require "../config/db.php";
+
+if(!isset($_SESSION['user'])){
+    die("Login required");
+}
+
+$uid = $_SESSION['user']['id'];
+
+$stmt = $conn->prepare("INSERT INTO carbon_logs (user_id, transport, electricity, gas, flights, total) VALUES (?,?,?,?,?,?)");
+$stmt->bind_param("iddddd", 
+  $uid,
+  $_POST['transport'],
+  $_POST['electricity'],
+  $_POST['gas'],
+  $_POST['flights'],
+  $_POST['total']
+);
+
+if($stmt->execute()){
+    echo "Carbon footprint saved! 🌱";
+}else{
+    echo "Database error";
+}
+?>
+
+
+
+
+
+input[type=range] {
+  width:100%;
+}
+
+button:focus,
+input:focus {
+  outline:3px solid #1abc9c;
+}
+
+.carbonBox {
+  max-width:420px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+
+
+
+
+
+
+<h3>Carbon Calculator Logs</h3>
+
+<table border="1">
+<tr>
+  <th>User</th>
+  <th>Transport</th>
+  <th>Electricity</th>
+  <th>Gas</th>
+  <th>Flights</th>
+  <th>Total</th>
+  <th>Date</th>
+</tr>
+
+<?php
+$logs = $conn->query("
+SELECT carbon_logs.*, users.name 
+FROM carbon_logs 
+JOIN users ON users.id = carbon_logs.user_id
+");
+
+while($row = $logs->fetch_assoc()):
+?>
+<tr>
+  <td><?= $row['name'] ?></td>
+  <td><?= $row['transport'] ?></td>
+  <td><?= $row['electricity'] ?></td>
+  <td><?= $row['gas'] ?></td>
+  <td><?= $row['flights'] ?></td>
+  <td><b><?= $row['total'] ?></b></td>
+  <td><?= $row['created_at'] ?></td>
+</tr>
+<?php endwhile; ?>
+</table>
+
+
+
+
+
+
+http://localhost/eco-site/index.php
+http://localhost/eco-site/
+
+
+
+
+
+
 
