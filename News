@@ -599,6 +599,249 @@ nav li {
 
 
 
+CREATE TABLE IF NOT EXISTS bookings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    service VARCHAR(100),
+    booking_date DATE,
+    booking_time TIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+
+
+
+
+
+
+<?php
+session_start();
+require_once '../config/db.php';
+
+$success = "";
+$error = "";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $user_id = $_SESSION['user_id'] ?? null;
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $service = $_POST['service'];
+    $date = $_POST['date'];
+    $time = $_POST['time'];
+
+    $stmt = $pdo->prepare("
+        INSERT INTO bookings (user_id, name, email, service, booking_date, booking_time)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+
+    if ($stmt->execute([$user_id, $name, $email, $service, $date, $time])) {
+        $success = "Booking successful!";
+    } else {
+        $error = "Booking failed. Please try again.";
+    }
+}
+?>
+
+<h1>Book a Service</h1>
+
+<?php if($success): ?><p style="color:green"><?= $success ?></p><?php endif; ?>
+<?php if($error): ?><p style="color:red"><?= $error ?></p><?php endif; ?>
+
+<form method="POST">
+    <input type="text" name="name" placeholder="Your Name" required><br>
+    <input type="email" name="email" placeholder="Your Email" required><br>
+
+    <select name="service" required>
+        <option value="">Select Service</option>
+        <option value="Consultation">Consultation</option>
+        <option value="Training">Training</option>
+        <option value="Support">Support</option>
+    </select><br>
+
+    <input type="date" name="date" required><br>
+    <input type="time" name="time" required><br>
+
+    <button type="submit">Book Now</button>
+</form>
+
+
+
+
+
+
+<?php
+session_start();
+require_once '../config/db.php';
+
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../auth/login.php");
+    exit;
+}
+
+$stmt = $pdo->query("
+    SELECT b.*, u.username
+    FROM bookings b
+    LEFT JOIN users u ON b.user_id = u.id
+    ORDER BY b.created_at DESC
+");
+
+$bookings = $stmt->fetchAll();
+?>
+
+<h1>All Bookings</h1>
+
+<table border="1">
+<tr>
+    <th>User</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Service</th>
+    <th>Date</th>
+    <th>Time</th>
+    <th>Created</th>
+</tr>
+
+<?php foreach($bookings as $b): ?>
+<tr>
+    <td><?= $b['username'] ?? 'Guest' ?></td>
+    <td><?= $b['name'] ?></td>
+    <td><?= $b['email'] ?></td>
+    <td><?= $b['service'] ?></td>
+    <td><?= $b['booking_date'] ?></td>
+    <td><?= $b['booking_time'] ?></td>
+    <td><?= $b['created_at'] ?></td>
+</tr>
+<?php endforeach; ?>
+</table>
+
+
+
+
+
+
+<?php
+session_start();
+require_once '../config/db.php';
+
+$message = "";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    $user = $stmt->fetch();
+
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role'];
+
+        header("Location: ../public/index.php?login=success");
+        exit;
+
+    } else {
+        $message = "Invalid username or password";
+    }
+}
+?>
+
+<?php if($message): ?>
+<p style="color:red"><?= $message ?></p>
+<?php endif; ?>
+
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+</form>
+
+
+
+
+
+
+
+
+
+<?php
+require_once '../config/db.php';
+
+$message = "";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE username=? OR email=?");
+    $stmt->execute([$username, $email]);
+
+    if ($stmt->rowCount()) {
+        $message = "User already exists";
+    } else {
+        $stmt = $pdo->prepare("INSERT INTO users (username,email,password) VALUES (?,?,?)");
+        $stmt->execute([$username, $email, $password]);
+
+        header("Location: login.php?register=success");
+        exit;
+    }
+}
+?>
+
+<?php if($message): ?>
+<p style="color:red"><?= $message ?></p>
+<?php endif; ?>
+
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" required><br>
+    <input type="email" name="email" placeholder="Email" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
+    <button type="submit">Register</button>
+</form>
+
+
+
+
+
+
+
+
+
+<?php
+require_once '../config/db.php';
+
+$success = "";
+$error = "";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $stmt = $pdo->prepare("INSERT INTO contact_messages (name,email,message) VALUES (?,?,?)");
+
+    if ($stmt->execute([$_POST['name'], $_POST['email'], $_POST['message']])) {
+        $success = "Message sent successfully";
+    } else {
+        $error = "Message failed";
+    }
+}
+?>
+
+<?php if($success): ?><p style="color:green"><?= $success ?></p><?php endif; ?>
+<?php if($error): ?><p style="color:red"><?= $error ?></p><?php endif; ?>
+
+<form method="POST">
+    <input type="text" name="name" placeholder="Name" required><br>
+    <input type="email" name="email" placeholder="Email" required><br>
+    <textarea name="message" placeholder="Message" required></textarea><br>
+    <button type="submit">Send</button>
+</form>
 
 
 
