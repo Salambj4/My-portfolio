@@ -1,848 +1,510 @@
-//Create a folder called eco-site.
-Inside it, create all the subfolders: config, auth, admin, public, assets.
-Inside assets, create css and js.
-Create the PHP files as listed (they can be empty for now).
-Create a file database.sql (for your database tables later).//
-
-config/db.php
-<?php
-// Database settings
-$host = 'localhost';
-$db   = 'eco_site';
-$user = 'root';
-$pass = '';
-
-// Connect to database
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
-}
-?>
-
-
-database.sql
-CREATE DATABASE IF NOT EXISTS eco_site;
-USE eco_site;
-
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role ENUM('user','admin') DEFAULT 'user',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-
-
-auth/register.php
-<?php
-require_once '../config/db.php'; // Connect to DB
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Secure hashing
-
-    // Check if username/email already exists
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
-    $stmt->execute([$username, $email]);
-    if ($stmt->rowCount() > 0) {
-        echo "Username or email already exists!";
-    } else {
-        $stmt = $pdo->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-        if ($stmt->execute([$username, $email, $password])) {
-            echo "Registration successful! You can now <a href='login.php'>login</a>.";
-        } else {
-            echo "Registration failed!";
-        }
-    }
-}
-?>
-
-<!-- Simple HTML form -->
-<form method="POST">
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="email" name="email" placeholder="Email" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Register</button>
-</form>
-
-
-
-auth/login.php
-<?php
-session_start();
-require_once '../config/db.php';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-    $stmt->execute([$username]);
-    $user = $stmt->fetch();
-
-    if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['role'] = $user['role'];
-        header("Location: ../admin/dashboard.php"); // Redirect to admin/dashboard
-        exit;
-    } else {
-        echo "Invalid username or password!";
-    }
-}
-?>
-
-<!-- Simple HTML form -->
-<form method="POST">
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Login</button>
-</form>
-
-
-
-
-auth/logout.php
-<?php
-session_start();
-session_unset();
-session_destroy();
-header("Location: login.php");
-exit;
-?>
-
-
-
-
-admin/dashboard.php
-<?php
-session_start();
-require_once '../config/db.php';
-
-// Protect page: only admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../auth/login.php");
-    exit;
-}
-
-// Fetch some info for dashboard
-$stmt = $pdo->query("SELECT COUNT(*) AS total_users FROM users");
-$total_users = $stmt->fetch()['total_users'];
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard</title>
-</head>
-<body>
-    <h1>Welcome, <?= $_SESSION['username']; ?> (Admin)</h1>
-    <p>Total users: <?= $total_users; ?></p>
-
-    <a href="../auth/logout.php">Logout</a>
-</body>
-</html>
-
-
-
-admin/users.php
-<?php
-session_start();
-require_once '../config/db.php';
-
-// Protect page: only admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../auth/login.php");
-    exit;
-}
-
-// Fetch all users
-$stmt = $pdo->query("SELECT id, username, email, role, created_at FROM users");
-$users = $stmt->fetchAll();
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Manage Users</title>
-</head>
-<body>
-    <h1>All Users</h1>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Created At</th>
-        </tr>
-        <?php foreach($users as $user): ?>
-            <tr>
-                <td><?= $user['id']; ?></td>
-                <td><?= $user['username']; ?></td>
-                <td><?= $user['email']; ?></td>
-                <td><?= $user['role']; ?></td>
-                <td><?= $user['created_at']; ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-
-    <a href="dashboard.php">Back to Dashboard</a>
-</body>
-</html>
-
-
-
-
-database.sql
-CREATE TABLE IF NOT EXISTS calculator_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    energy_consumption FLOAT,
-    transport_miles FLOAT,
-    food_impact FLOAT,
-    total_carbon FLOAT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-
-
-
-public/calculator.php
-<?php
-session_start();
-require_once '../config/db.php';
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../auth/login.php");
-    exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $energy = $_POST['energy'];
-    $transport = $_POST['transport'];
-    $food = $_POST['food'];
-
-    // Simple carbon formula
-    $total = $energy * 0.5 + $transport * 0.8 + $food * 0.3;
-
-    // Insert into DB
-    $stmt = $pdo->prepare("INSERT INTO calculator_logs (user_id, energy_consumption, transport_miles, food_impact, total_carbon) VALUES (?, ?, ?, ?, ?)");
-    $stmt->execute([$_SESSION['user_id'], $energy, $transport, $food, $total]);
-
-    $message = "Your estimated carbon footprint is: $total kg CO2";
-}
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Carbon Calculator</title>
-</head>
-<body>
-    <h1>Carbon Calculator</h1>
-
-    <?php if (isset($message)) echo "<p>$message</p>"; ?>
-
-    <form method="POST">
-        <label>Energy Consumption (kWh per month):</label><br>
-        <input type="number" name="energy" step="0.1" required><br>
-
-        <label>Transport Miles per week:</label><br>
-        <input type="number" name="transport" step="0.1" required><br>
-
-        <label>Food Impact (estimated):</label><br>
-        <input type="number" name="food" step="0.1" required><br>
-
-        <button type="submit">Calculate</button>
-    </form>
-
-    <script>
-        // Optional: Live calculation without reload
-        const energyInput = document.querySelector('[name="energy"]');
-        const transportInput = document.querySelector('[name="transport"]');
-        const foodInput = document.querySelector('[name="food"]');
-
-        const result = document.createElement('p');
-        document.body.insertBefore(result, document.querySelector('form'));
-
-        function updateResult() {
-            const e = parseFloat(energyInput.value) || 0;
-            const t = parseFloat(transportInput.value) || 0;
-            const f = parseFloat(foodInput.value) || 0;
-            const total = e * 0.5 + t * 0.8 + f * 0.3;
-            result.textContent = `Estimated Carbon Footprint: ${total.toFixed(2)} kg CO2`;
-        }
-
-        energyInput.addEventListener('input', updateResult);
-        transportInput.addEventListener('input', updateResult);
-        foodInput.addEventListener('input', updateResult);
-    </script>
-</body>
-</html>
-
-
-
-
-admin/calculator_logs.php
-<?php
-session_start();
-require_once '../config/db.php';
-
-// Protect page: only admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../auth/login.php");
-    exit;
-}
-
-// Fetch calculator logs with user info
-$stmt = $pdo->query("
-    SELECT c.id, u.username, c.energy_consumption, c.transport_miles, c.food_impact, c.total_carbon, c.created_at
-    FROM calculator_logs c
-    JOIN users u ON c.user_id = u.id
-    ORDER BY c.created_at DESC
-");
-$logs = $stmt->fetchAll();
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Calculator Logs</title>
-</head>
-<body>
-    <h1>All Calculator Logs</h1>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Energy (kWh)</th>
-            <th>Transport (miles)</th>
-            <th>Food Impact</th>
-            <th>Total Carbon (kg CO2)</th>
-            <th>Submitted At</th>
-        </tr>
-        <?php foreach($logs as $log): ?>
-        <tr>
-            <td><?= $log['id']; ?></td>
-            <td><?= $log['username']; ?></td>
-            <td><?= $log['energy_consumption']; ?></td>
-            <td><?= $log['transport_miles']; ?></td>
-            <td><?= $log['food_impact']; ?></td>
-            <td><?= $log['total_carbon']; ?></td>
-            <td><?= $log['created_at']; ?></td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
-
-    <a href="dashboard.php">Back to Dashboard</a>
-</body>
-</html>
-
-
-
-database.sql
-CREATE TABLE IF NOT EXISTS contact_messages (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    name VARCHAR(100),
-    email VARCHAR(100),
-    message TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-
-
-
-public/contact.php
-<?php
-session_start();
-require_once '../config/db.php';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_id = $_SESSION['user_id'] ?? null;
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $message = $_POST['message'];
-
-    $stmt = $pdo->prepare("INSERT INTO contact_messages (user_id, name, email, message) VALUES (?, ?, ?, ?)");
-    if ($stmt->execute([$user_id, $name, $email, $message])) {
-        $success = "Message sent successfully!";
-    } else {
-        $error = "Failed to send message.";
-    }
-}
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Contact Us</title>
-</head>
-<body>
-    <h1>Contact Us</h1>
-
-    <?php if(isset($success)) echo "<p style='color:green;'>$success</p>"; ?>
-    <?php if(isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
-
-    <form method="POST">
-        <input type="text" name="name" placeholder="Your Name" required><br>
-        <input type="email" name="email" placeholder="Your Email" required><br>
-        <textarea name="message" placeholder="Your Message" required></textarea><br>
-        <button type="submit">Send</button>
-    </form>
-</body>
-</html>
-
-
-
-
-admin/contact_logs.php
-<?php
-session_start();
-require_once '../config/db.php';
-
-// Protect page: only admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../auth/login.php");
-    exit;
-}
-
-// Fetch messages with user info if available
-$stmt = $pdo->query("
-    SELECT c.id, u.username, c.name, c.email, c.message, c.created_at
-    FROM contact_messages c
-    LEFT JOIN users u ON c.user_id = u.id
-    ORDER BY c.created_at DESC
-");
-$messages = $stmt->fetchAll();
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Contact Messages</title>
-</head>
-<body>
-    <h1>Contact Messages</h1>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Message</th>
-            <th>Submitted At</th>
-        </tr>
-        <?php foreach($messages as $msg): ?>
-        <tr>
-            <td><?= $msg['id']; ?></td>
-            <td><?= $msg['username'] ?? 'Guest'; ?></td>
-            <td><?= $msg['name']; ?></td>
-            <td><?= $msg['email']; ?></td>
-            <td><?= $msg['message']; ?></td>
-            <td><?= $msg['created_at']; ?></td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
-
-    <a href="dashboard.php">Back to Dashboard</a>
-</body>
-</html>
-
-
-
-
-
-public/accessibility.php
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Accessibility Settings</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-        body.dyslexia { font-family: "OpenDyslexic", Arial, sans-serif; }
-        body.high-contrast { background-color: black; color: white; }
-    </style>
-</head>
-<body>
-    <h1>Accessibility Settings</h1>
-
-    <!-- Text Size -->
-    <button onclick="document.body.style.fontSize='16px'">Normal Text</button>
-    <button onclick="document.body.style.fontSize='20px'">Large Text</button>
-    <button onclick="document.body.style.fontSize='24px'">Extra Large Text</button>
-
-    <!-- Contrast Toggle -->
-    <button onclick="document.body.classList.toggle('high-contrast')">Toggle High Contrast</button>
-
-    <!-- Dyslexia Font -->
-    <button onclick="document.body.classList.toggle('dyslexia')">Toggle Dyslexia Font</button>
-
-    <!-- Keyboard navigation note -->
-    <p>Use Tab key to navigate through links and buttons.</p>
-</body>
-</html>
-
-/* Basic body font */
-body {
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-}
-
-/* High contrast mode */
-body.high-contrast {
-    background-color: black;
-    color: white;
-}
-
-/* Dyslexia-friendly font */
-body.dyslexia {
-    font-family: "OpenDyslexic", Arial, sans-serif;
-}
-
-/* Buttons styling */
-button {
-    padding: 8px 12px;
-    margin: 5px;
-    cursor: pointer;
-}
-
-
-
-
-
-
-/* Mobile first (default) */
-body {
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    margin: 0;
-    padding: 0 10px;
-}
-
-/* Tables scrollable on small screens */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-table th, table td {
-    padding: 8px;
-    text-align: left;
-    border: 1px solid #ccc;
-}
-table {
-    display: block;
-    overflow-x: auto;
-}
-
-/* Buttons full width on small screens */
-button {
-    width: 100%;
-    margin: 5px 0;
-}
-
-/* Medium screens (tablet) */
-@media (min-width: 600px) {
-    body {
-        padding: 0 20px;
-        font-size: 18px;
-    }
-    button {
-        width: auto;
-    }
-}
-
-/* Large screens (desktop) */
-@media (min-widt
-
-
-
-
-
-/* Admin dashboard container */
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 20px;
-}
-
-/* Dashboard table scroll */
-table {
-    width: 100%;
-    overflow-x: auto;
-}
-
-/* Responsive nav (if you add menus later) */
-nav ul {
-    list-style: none;
-    padding: 0;
-}
-nav li {
-    display: inline-block;
-    margin-right: 10px;
-}
-@media (max-width: 600px) {
-    nav li {
-        display: block;
-        margin: 5px 0;
-    }
-}
-
-
-
-CREATE TABLE IF NOT EXISTS bookings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    name VARCHAR(100),
-    email VARCHAR(100),
-    service VARCHAR(100),
-    booking_date DATE,
-    booking_time TIME,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
-
-
-
-
-
-
-<?php
-session_start();
-require_once '../config/db.php';
-
-$success = "";
-$error = "";
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $user_id = $_SESSION['user_id'] ?? null;
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $service = $_POST['service'];
-    $date = $_POST['date'];
-    $time = $_POST['time'];
-
-    $stmt = $pdo->prepare("
-        INSERT INTO bookings (user_id, name, email, service, booking_date, booking_time)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ");
-
-    if ($stmt->execute([$user_id, $name, $email, $service, $date, $time])) {
-        $success = "Booking successful!";
-    } else {
-        $error = "Booking failed. Please try again.";
-    }
-}
-?>
-
-<h1>Book a Service</h1>
-
-<?php if($success): ?><p style="color:green"><?= $success ?></p><?php endif; ?>
-<?php if($error): ?><p style="color:red"><?= $error ?></p><?php endif; ?>
-
-<form method="POST">
-    <input type="text" name="name" placeholder="Your Name" required><br>
-    <input type="email" name="email" placeholder="Your Email" required><br>
-
-    <select name="service" required>
-        <option value="">Select Service</option>
-        <option value="Consultation">Consultation</option>
-        <option value="Training">Training</option>
-        <option value="Support">Support</option>
-    </select><br>
-
-    <input type="date" name="date" required><br>
-    <input type="time" name="time" required><br>
-
-    <button type="submit">Book Now</button>
-</form>
-
-
-
-
-
-
-<?php
-session_start();
-require_once '../config/db.php';
-
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../auth/login.php");
-    exit;
-}
-
-$stmt = $pdo->query("
-    SELECT b.*, u.username
-    FROM bookings b
-    LEFT JOIN users u ON b.user_id = u.id
-    ORDER BY b.created_at DESC
-");
-
-$bookings = $stmt->fetchAll();
-?>
-
-<h1>All Bookings</h1>
-
-<table border="1">
-<tr>
-    <th>User</th>
-    <th>Name</th>
-    <th>Email</th>
-    <th>Service</th>
-    <th>Date</th>
-    <th>Time</th>
-    <th>Created</th>
-</tr>
-
-<?php foreach($bookings as $b): ?>
-<tr>
-    <td><?= $b['username'] ?? 'Guest' ?></td>
-    <td><?= $b['name'] ?></td>
-    <td><?= $b['email'] ?></td>
-    <td><?= $b['service'] ?></td>
-    <td><?= $b['booking_date'] ?></td>
-    <td><?= $b['booking_time'] ?></td>
-    <td><?= $b['created_at'] ?></td>
-</tr>
-<?php endforeach; ?>
-</table>
-
-
-
-
-
-
-<?php
-session_start();
-require_once '../config/db.php';
-
-$message = "";
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-    $stmt->execute([$username]);
-    $user = $stmt->fetch();
-
-    if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['role'] = $user['role'];
-
-        header("Location: ../public/index.php?login=success");
-        exit;
-
-    } else {
-        $message = "Invalid username or password";
-    }
-}
-?>
-
-<?php if($message): ?>
-<p style="color:red"><?= $message ?></p>
-<?php endif; ?>
-
-<form method="POST">
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Login</button>
-</form>
-
-
-
-
-
-
-
-
-
-<?php
-require_once '../config/db.php';
-
-$message = "";
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE username=? OR email=?");
-    $stmt->execute([$username, $email]);
-
-    if ($stmt->rowCount()) {
-        $message = "User already exists";
-    } else {
-        $stmt = $pdo->prepare("INSERT INTO users (username,email,password) VALUES (?,?,?)");
-        $stmt->execute([$username, $email, $password]);
-
-        header("Location: login.php?register=success");
-        exit;
-    }
-}
-?>
-
-<?php if($message): ?>
-<p style="color:red"><?= $message ?></p>
-<?php endif; ?>
-
-<form method="POST">
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="email" name="email" placeholder="Email" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <button type="submit">Register</button>
-</form>
-
-
-
-
-
-
-
-
-
-<?php
-require_once '../config/db.php';
-
-$success = "";
-$error = "";
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $stmt = $pdo->prepare("INSERT INTO contact_messages (name,email,message) VALUES (?,?,?)");
-
-    if ($stmt->execute([$_POST['name'], $_POST['email'], $_POST['message']])) {
-        $success = "Message sent successfully";
-    } else {
-        $error = "Message failed";
-    }
-}
-?>
-
-<?php if($success): ?><p style="color:green"><?= $success ?></p><?php endif; ?>
-<?php if($error): ?><p style="color:red"><?= $error ?></p><?php endif; ?>
-
-<form method="POST">
-    <input type="text" name="name" placeholder="Name" required><br>
-    <input type="email" name="email" placeholder="Email" required><br>
-    <textarea name="message" placeholder="Message" required></textarea><br>
-    <button type="submit">Send</button>
-</form>
+### 1. Hardware and Software in Education
 
+Examples:
 
+Hardware:
 
+- laptops
+- tablets
+- smartboards
+- servers
+- VR headsets
 
+Software:
+
+- learning platforms
+- assessment tools
+- collaboration tools
+
+Example systems:
+
+- Moodle
+- Google Classroom
+- Microsoft Teams
+
+---
+
+### 2. Emerging Technology
+
+You should research **new technology used in learning**, like:
+
+- **AI learning assistants**
+- **VR/AR learning**
+- **mobile learning apps**
+- **cloud learning platforms**
+
+Example:
+
+AR science simulations where students interact with 3D models.
+
+---
+
+### 3. How Digital Solutions Meet User Needs
+
+Different users:
+
+| User | Needs |
+| --- | --- |
+| Students | learn subjects |
+| Tutors | track progress |
+| Parents | monitor results |
+| Admin | manage bookings |
+
+Example solution:
+
+Student dashboard showing:
+
+- lessons
+- quiz scores
+- progress graphs
+
+---
+
+### 4. Industry Guidelines and Regulations
+
+Important rules:
+
+**Accessibility**
+
+- WCAG
+- W3C standards
+
+**Data protection**
+
+- GDPR
+
+**Security**
+
+- HTTPS
+- encryption
+- secure login
+
+---
+
+# Activity A(ii) — The Proposal (Most Important Part)
+
+This is where **most marks come from**.
+
+You must design a **digital solution idea** and explain it.
+
+Your proposal must include:
+
+---
+
+# 1. Business Context
+
+Explain **the company and the problem**.
+
+Example:
+
+GibJohn Tutoring currently offers:
+
+- face-to-face lessons
+- learning resources
+- academic support
+
+However they want a **digital platform** to:
+
+- expand learning
+- monitor progress
+- allow interactive learning
+
+So your solution must solve this.
+
+---
+
+# 2. Description of the Proposed Solution
+
+Explain the **system you will build**.
+
+Example solution:
+
+A **web-based learning platform**.
+
+Features:
+
+Student features
+
+- login
+- view lessons
+- take quizzes
+- track progress
+- earn rewards
+
+Tutor features
+
+- upload resources
+- monitor student performance
+- create quizzes
+
+Admin features
+
+- manage users
+- schedule lessons
+- manage rewards
+
+---
+
+# 3. Functional Requirements
+
+These describe **what the system must do**.
+
+Examples:
+
+- users can **register accounts**
+- students can **access learning materials**
+- tutors can **upload content**
+- system can **track progress**
+- system can **generate quizzes**
+- reward points are given for completion
+
+---
+
+# 4. Non-Functional Requirements
+
+These describe **how well the system works**.
+
+Examples:
+
+Performance
+
+- pages load in under 2 seconds
+
+Security
+
+- encrypted login
+
+Accessibility
+
+- adjustable text size
+- screen reader compatibility
+
+Compatibility
+
+- works on phones, tablets, and PCs
+
+---
+
+# 5. Decomposition of the Problem
+
+Break the system into **smaller problems**.
+
+Example:
+
+Main system:
+
+Learning Platform
+
+Sub systems:
+
+1️⃣ User management
+2️⃣ Learning content system
+3️⃣ Assessment system
+4️⃣ Progress tracking
+5️⃣ Reward system
+
+Each has smaller processes.
+
+Example:
+
+User Management
+
+- registration
+- login
+- password reset
+- role assignment
+
+The mark scheme specifically expects **problem decomposition**.
+
+---
+
+# 6. KPIs (Key Performance Indicators)
+
+These measure **system success**.
+
+Examples:
+
+- 90% of students complete quizzes
+- 80% user satisfaction
+- 1000 active users within 6 months
+- system uptime 99%
+
+---
+
+# 7. User Acceptance Criteria
+
+These define **what must work before the client accepts the system**.
+
+Examples:
+
+- student can log in
+- student can complete quizzes
+- tutor can upload lessons
+- progress tracking displays correctly
+
+---
+
+# 8. Risks + Mitigation
+
+The mark scheme expects **security risks**.
+
+Examples:
+
+### SQL Injection
+
+Risk:
+Hackers accessing database
+
+Solution:
+
+- input sanitisation
+- prepared SQL statements
+
+---
+
+### Cross Site Scripting (XSS)
+
+Risk:
+Malicious scripts in forms
+
+Solution:
+
+- input validation
+- escaping output
+
+---
+
+### Man-in-the-Middle attack
+
+Risk:
+Data interception
+
+Solution:
+
+- HTTPS
+- SSL encryption
+
+---
+
+# 9. Legal and Ethical Considerations
+
+Important in education systems.
+
+Examples:
+
+**GDPR**
+
+- student data must be protected
+- parental consent if under 18
+
+**Copyright**
+
+- learning materials must not be illegally copied
+
+**Accessibility**
+
+- comply with WCAG
+
+
+
+
+## 1. Overview of the Proposed System
+
+The proposed solution is a **Retail Management System** designed to manage product sales, stock levels, supplier coordination and customer purchases.
+
+The system will allow:
+
+- Customers to create accounts and purchase products
+- Admin staff to monitor business performance
+- Staff to track supplier deliveries
+- Suppliers to view restock requests
+- Customers to receive loyalty rewards
+
+The system will operate as a **web-based platform** accessible on both **desktop and mobile devices**, ensuring flexibility for customers and staff.
+
+The system will consist of two main parts:
+
+- **Frontend (GUI)** – user interface for customers, staff, suppliers and admin
+- **Backend** – server-side logic handling authentication, stock management and data processing.
+
+---
+
+## 2. Target Users
+
+### Customers
+
+Customers will use the system to:
+
+- create accounts
+- browse products
+- purchase items
+- track loyalty rewards
+- view purchase history
+
+### Staff
+
+Staff will use the system to:
+
+- monitor stock levels
+- track supplier deliveries
+- receive stock updates
+- identify items needing restocking
+
+### Admin
+
+Admins will access a dashboard containing:
+
+- sales analytics
+- stock levels
+- product availability
+- expiry monitoring
+- supplier data
+
+### Suppliers
+
+Suppliers will access restocking information including:
+
+- items requiring restocking
+- order quantities
+- delivery status
+- shipment tracking
+
+---
+
+## 3. Key System Features
+
+### Customer Account System
+
+Customers can:
+
+- create accounts
+- log in securely
+- manage personal details
+- access loyalty rewards
+
+Passwords will be securely stored using **hashed encryption**.
+
+---
+
+### Product Catalogue
+
+The system will store all products with:
+
+- product name
+- price
+- stock quantity
+- expiry date
+- availability status
+
+Customers can search and filter products before purchasing.
+
+---
+
+### Checkout & Payment System
+
+Customers can:
+
+- add products to a basket
+- review total cost
+- complete purchases at checkout
+
+The system will automatically:
+
+- verify stock availability
+- calculate total price
+- update inventory after purchase
+
+---
+
+### Loyalty Reward System
+
+Customers earn **loyalty points** after purchases.
+
+Points can later be used for:
+
+- discounts
+- rewards
+- promotional offers
+
+This feature helps **retain customers and encourage repeat purchases**.
+
+---
+
+### Stock Management
+
+The system will continuously track stock levels.
+
+Features include:
+
+- real-time stock monitoring
+- automatic restock alerts
+- expiry date tracking
+- unavailable product detection
+
+---
+
+### Supplier Integration
+
+Suppliers will receive notifications when stock reaches a **restocking threshold**.
+
+They can:
+
+- confirm restock orders
+- update shipment progress
+- provide delivery tracking information
+
+Staff can track delivery progress to estimate **restocking arrival times**.
+
+---
+
+### Admin Dashboard
+
+Admins will have access to a central dashboard displaying:
+
+- sales performance
+- stock growth trends
+- items close to expiry
+- product availability
+- supplier activity
+
+This helps support **business decision-making and inventory planning**.
+
+---
+
+## 4. Accessibility Features
+
+The system will support a wide range of accessibility features including:
+
+- adjustable text sizes
+- high contrast colour mode
+- screen reader compatibility
+- keyboard navigation
+- mobile responsive design
+
+These features ensure the system is usable by a wide range of customers.
+
+---
+
+## 5. System Benefits
+
+The proposed system provides several benefits for the retail company.
+
+### Improved stock control
+
+Automatic stock tracking helps reduce:
+
+- overstocking
+- stock shortages
+- expired product sales
+
+### Improved customer experience
+
+Customers can easily browse and purchase products while earning loyalty rewards.
+
+### Better supplier coordination
+
+Suppliers receive automated restocking information, improving delivery efficiency.
+
+### Business insights
+
+The admin dashboard allows the company to monitor sales performance and product demand.
