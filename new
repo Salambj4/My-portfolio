@@ -1,317 +1,715 @@
-# Eco‑Site Web Platform – Technical Justification & Test Log
 
-## 1. Project Overview
+| Section | Purpose |
+| --- | --- |
+| Visual Design | Interface layout |
+| Algorithms | System logic |
+| Data Requirements | Database design |
+| Test Strategy | Validation plan |
+| Design Documentation | Explanation for developers |
 
-This document provides a full technical justification of the Eco‑Site web platform, explaining **what each system does, why it was implemented, and how all components integrate together**. It also includes a **complete testing log** to demonstrate that the website functions correctly, securely, and reliably.
+# 1. Visual / Interface Design (GUI)
 
-The system was designed to meet **professional commercial development standards**, ensuring:
+This shows **what the system looks like to users**.
 
-* Security
-* Scalability
-* Maintainability
-* Accessibility
-* User Experience
-* Data Integrity
+You should show **layout, accessibility and navigation**.
+
+### Customer Home Page
+
+```
+--------------------------------------------------
+LOGO        Search Products          Login | Cart
+--------------------------------------------------
+
+Categories:
+[Food] [Electronics] [Clothing] [Offers]
+
+--------------------------------------------------
+Product Name
+Price: £12.99
+Stock: Available
+
+[Add to Cart]
+--------------------------------------------------
+
+Footer:
+Contact | Help | Accessibility Settings
+```
+
+### Checkout Page
+
+```
+-------------------------------------
+Shopping Cart
+-------------------------------------
+
+Product        Quantity      Price
+Apple Juice       2           £5.00
+Chocolate         1           £2.50
+
+Total: £7.50
+
+Loyalty Points Available: 120
+
+[Apply Loyalty Discount]
+
+[Proceed to Payment]
+```
 
 ---
 
-# PART A — SYSTEM JUSTIFICATION REPORT
-
-## 2. Folder Structure Justification
-
-### Structure Used:
+### Admin Dashboard
 
 ```
-/eco-site
+------------------------------------------------
+ADMIN DASHBOARD
+------------------------------------------------
+
+Sales Today: £2,350
+Stock Alerts: 6
+Expiring Soon: 12
+
+------------------------------------------------
+Analytics
+------------------------------------------------
+Sales Growth Graph
+Top Selling Products
+
+------------------------------------------------
+Stock Monitoring
+------------------------------------------------
+Product        Stock      Status
+Milk            5         Low
+Rice           30         OK
+Yogurt          2         Expiring Soon
+```
+
+---
+
+### Accessibility Features
+
+Interface includes:
+
+- text size adjustment
+- colour contrast mode
+- screen reader compatibility
+- keyboard navigation
+- mobile responsive layout
+
+---
+
+# 2. Algorithm Designs (Logic)
+
+These explain **how important processes work**.
+
+---
+
+## Algorithm 1 — Customer Login
+
+Step-by-step logic:
+
+```
+START
+
+User enters email and password
+
+System checks Customer Database
+
+IF email does not exist
+    Display "Account not found"
+ELSE
+    IF password incorrect
+        Display "Incorrect password"
+    ELSE
+        Login successful
+        Open customer dashboard
+END
+```
+
+---
+
+## Algorithm 2 — Create Account
+
+```
+START
+
+User enters name, email, password
+
+Check if email already exists
+
+IF email exists
+    Display error message
+ELSE
+    Validate password strength
+
+    IF password weak
+        Request stronger password
+    ELSE
+        Save user details to database
+        Account created
+END
+```
+
+---
+
+## Algorithm 3 — Product Purchase
+
+```
+START
+
+Customer selects product
+Add product to cart
+
+Customer proceeds to checkout
+
+Check product stock
+
+IF stock = 0
+    Display "Out of stock"
+ELSE
+    Calculate total price
+    Apply loyalty discount
+
+    Process payment
+
+    IF payment fails
+        Display payment error
+    ELSE
+        Update stock quantity
+        Add loyalty points
+        Save order record
+END
+```
+
+---
+
+## Algorithm 4 — Automatic Restocking
+
+```
+START
+
+System checks stock levels
+
+IF stock below threshold
+    Generate restock request
+
+Send request to supplier
+
+Supplier confirms shipment
+
+Staff track delivery location
+
+When stock arrives
+    Update inventory
+END
+```
+
+---
+
+## Flowchart 1 — Customer Login
+
+```
+START
+↓
+User enters email and password
+↓
+System searches customer database
+↓
+Email found?
+
+NO → Display "Account not found"
+      Return to login
+
+YES
+↓
+Check password
+
+Password correct?
+
+NO → Display "Incorrect password"
+
+YES → Login successful
+      Open customer dashboard
+↓
+END
+```
+
+---
+
+## Flowchart 2 — Customer Registration
+
+```
+START
+↓
+Customer enters:
+
+Name
+Email
+Password
+Phone
+↓
+System validates data
+↓
+Email already exists?
+
+YES → Show "Account already exists"
+
+NO
+↓
+Password valid?
+
+NO → Request stronger password
+
+YES
+↓
+Store account in database
+↓
+Display "Account created successfully"
+↓
+END
+```
+
+---
+
+## Flowchart 3 — Purchase Product
+
+```
+START
+↓
+Customer selects product
+↓
+Add item to cart
+↓
+Customer selects checkout
+↓
+Check stock availability
+
+Stock available?
+
+NO → Display "Out of stock"
+
+YES
+↓
+Calculate total price
+↓
+Apply loyalty rewards
+↓
+Process payment
+
+Payment successful?
+
+NO → Payment failed
+
+YES
+↓
+Update product stock
+↓
+Store order in database
+↓
+Display confirmation
+↓
+END
+```
+
+---
+
+## Flowchart 4 — Admin Dashboard Access
+
+```
+START
+↓
+Admin enters credentials
+↓
+System checks admin database
+↓
+Credentials valid?
+
+NO → Access denied
+
+YES
+↓
+Load dashboard data
+
+Sales analytics
+Stock levels
+Expiry alerts
+Supplier status
+↓
+Display dashboard
+↓
+END
+```
+
+---
+
+## Flowchart 5 — Supplier Restocking
+
+```
+START
+↓
+System monitors stock
+↓
+Stock below threshold?
+
+NO → Continue monitoring
+
+YES
+↓
+Generate restock request
+↓
+Send request to supplier
+↓
+Supplier confirms shipment
+↓
+Staff track delivery location
+↓
+Stock received
+↓
+Update inventory
+↓
+END
+```
+
+---
+
+# 2. Data Flow Diagrams (DFD)
+
+Each DFD shows:
+
+- **External entities**
+- **Process**
+- **Data store**
+- **Data flow arrows with labels**
+
+---
+
+## DFD 1 — Customer Login
+
+External Entity
+
+Customer
+
+Process
+
+Login Authentication System
+
+Data Store
+
+Customer Database
+
+Data flows:
+
+```
+Customer
+   │
+   │ enters email & password
+   ↓
+Login System
+   │
+   │ verify credentials
+   ↓
+Customer Database
+   │
+   │ return account details
+   ↓
+Login System
+   │
+   │ authentication result
+   ↓
+Customer
+```
+
+Arrow descriptions:
+
+- Enter login credentials
+- Verify user account
+- Retrieve user data
+- Return authentication result
+
+---
+
+## DFD 2 — Product Purchase
+
+External Entity
+
+Customer
+
+Process
+
+Order Processing System
+
+Data Stores
+
+- Product Database
+- Orders Database
+
+```
+Customer
+   │
+   │ select product
+   ↓
+Order Processing System
+   │
+   │ check stock level
+   ↓
+Product Database
+   │
+   │ return product availability
+   ↓
+Order Processing System
+   │
+   │ save order record
+   ↓
+Orders Database
+   │
+   │ confirmation details
+   ↓
+Customer
+```
+
+Arrow descriptions:
+
+- Product selection request
+- Stock verification
+- Product availability response
+- Order storage
+- Purchase confirmation
+
+---
+
+## DFD 3 — Supplier Restocking
+
+External Entities
+
+- Supplier
+- Staff
+
+Process
+
+Stock Management System
+
+Data Stores
+
+- Inventory Database
+- Supplier Database
+
+```
+Inventory Database
+   │
+   │ stock level data
+   ↓
+Stock Management System
+   │
+   │ restock request
+   ↓
+Supplier
+   │
+   │ shipment update
+   ↓
+Stock Management System
+   │
+   │ delivery status
+   ↓
+Staff
+```
+
+Arrow descriptions:
+
+- Monitor stock levels
+- Generate restock request
+- Delivery tracking update
+- Display supplier status
+
+---
+
+# 3. Hierarchy Diagrams
+
+Hierarchy diagrams show **system decomposition**.
+
+Each hierarchy splits into **GUI vs Backend**.
+
+---
+
+## Hierarchy 1 — Customer System
+
+```
+Customer System
 │
-├── /config
-├── /auth
-├── /admin
-├── /public
-├── /assets
-└── database.sql
+├── GUI
+│     ├ Register Account Page
+│     ├ Login Page
+│     ├ Product Catalogue
+│     ├ Shopping Cart
+│     └ Checkout Page
+│
+└── Backend
+      ├ Account Authentication
+      ├ Product Retrieval
+      ├ Order Processing
+      ├ Loyalty Points Calculation
+      └ Database Storage
 ```
 
-### Why This Structure Was Used:
+---
 
-This folder layout follows **modern professional web development practices**, ensuring that:
+## Hierarchy 2 — Admin System
 
-* Code is **modular and organised**
-* Security risks are reduced
-* Files are easy to maintain and expand
-
-### Folder Purposes:
-
-| Folder         | Purpose                                                                                       |
-| -------------- | --------------------------------------------------------------------------------------------- |
-| `/config`      | Stores sensitive configuration files such as database connections. Prevents code duplication. |
-| `/auth`        | Handles authentication logic such as login, registration, logout, and sessions.               |
-| `/admin`       | Contains admin-only systems, protected via role validation.                                   |
-| `/public`      | Public user-facing pages.                                                                     |
-| `/assets`      | Stores CSS, JavaScript, and UI resources.                                                     |
-| `database.sql` | Centralised SQL schema for database structure.                                                |
-
-This separation improves **security, scalability, debugging, and maintainability**.
+```
+Admin Dashboard
+│
+├── GUI
+│     ├ Sales Analytics Dashboard
+│     ├ Stock Monitoring Page
+│     ├ Product Management Page
+│     └ Supplier Monitoring Page
+│
+└── Backend
+      ├ Sales Data Analysis
+      ├ Inventory Monitoring
+      ├ Expiry Detection
+      └ Supplier Data Processing
+```
 
 ---
 
-## 3. Database System Justification
+## Hierarchy 3 — Supplier System
 
-### Technologies Used:
-
-* MySQL Database
-* PHP PDO (PHP Data Objects)
-
-### Why PDO Was Used:
-
-PDO provides:
-
-* SQL injection protection
-* Secure prepared statements
-* Clean error handling
-* Database portability
-
-This makes the system **enterprise-level secure**.
-
-### Database Tables Used:
-
-| Table              | Purpose                                          |
-| ------------------ | ------------------------------------------------ |
-| `users`            | Stores user authentication credentials and roles |
-| `calculator_logs`  | Records carbon calculations                      |
-| `contact_messages` | Stores contact submissions                       |
-| `bookings`         | Stores booking records                           |
-
-This structure ensures **data integrity, audit trails, and accountability**.
+```
+Supplier Management
+│
+├── GUI
+│     ├ Restock Request Page
+│     ├ Delivery Status Page
+│     └ Shipment Confirmation Page
+│
+└── Backend
+      ├ Stock Threshold Monitoring
+      ├ Supplier Communication System
+      └ Delivery Tracking System
+```
 
 ---
 
-## 4. Authentication System Justification
+# Data Requirements
 
-### Components:
+This table shows:
 
-* Register
-* Login
-* Logout
-* Session Handling
-* Role Validation
+- **data input**
+- **data type**
+- **validation rules**
 
-### Why Authentication Was Required:
-
-Authentication allows:
-
-* Secure user access
-* User-specific features
-* Admin permission control
-* Data protection
-
-### Security Measures Implemented:
-
-* Password hashing using `password_hash()`
-* Password verification using `password_verify()`
-* Session-based login control
-* Role-based access restrictions
-
-This ensures **high security against brute-force attacks, data breaches, and unauthorised access**.
+| Data Item | Description | Data Type | Validation |
+| --- | --- | --- | --- |
+| Customer Name | name of customer | String | must contain letters only |
+| Email Address | login email | String | must contain "@" and valid domain |
+| Password | user password | String | minimum 8 characters |
+| Phone Number | contact number | Integer/String | must contain 10–11 digits |
+| Product Name | item name | String | cannot be empty |
+| Product Price | item price | Decimal | must be greater than 0 |
+| Stock Quantity | number of items | Integer | must be positive |
+| Expiry Date | product expiry | Date | must be future date |
+| Order Total | total purchase cost | Decimal | automatically calculated |
 
 ---
 
-## 5. Role-Based Admin System Justification
+# Test Strategy
 
-### Admin Capabilities:
-
-* View all users
-* View calculator logs
-* View bookings
-* View contact messages
-
-### Why Role Protection Was Implemented:
-
-Admin systems contain **sensitive business data**. Role validation ensures:
-
-* Only authorised administrators can access confidential records
-* Prevents data leakage
-* Protects business integrity
+Testing ensures the system works correctly and securely.
 
 ---
 
-## 6. Carbon Calculator System Justification
+## Unit Testing
 
-### Purpose:
+Individual components tested separately.
 
-To allow users to calculate their estimated **carbon footprint**, promoting environmental awareness.
-
-### Key Features:
-
-* Real-time JavaScript calculations
-* PHP-based secure data logging
-* Admin reporting dashboard
-
-### Why This System Was Implemented:
-
-* Encourages environmental engagement
-* Provides business analytics data
-* Allows admin trend monitoring
-
-### Why Logging Was Required:
-
-Logging allows:
-
-* Performance analysis
-* User behaviour tracking
-* Environmental data analysis
-* Report generation
+| Test Case | Input | Expected Result |
+| --- | --- | --- |
+| Login valid user | correct email/password | login successful |
+| Login wrong password | incorrect password | error message |
+| Add product to cart | valid product | item added to cart |
 
 ---
 
-## 7. Booking System Justification
+## Validation Testing
 
-### Purpose:
+Checks invalid input.
 
-Allows users to **book services, training sessions, or consultations online**.
-
-### Key Features:
-
-* Date & time selection
-* Service type selection
-* Secure database storage
-* Admin booking dashboard
-
-### Business Benefits:
-
-* Automates appointment handling
-* Prevents manual booking errors
-* Creates booking audit trails
-* Improves customer experience
+| Test | Input | Expected Outcome |
+| --- | --- | --- |
+| Invalid email | usergmail.com | error message |
+| Weak password | 1234 | rejected |
+| Negative stock | -10 | validation error |
 
 ---
 
-## 8. Contact System Justification
+## Security Testing
 
-### Purpose:
+Tests protection against attacks.
 
-Allows customers to send enquiries directly through the website.
+Examples:
 
-### Features:
+- SQL injection attempts
+- multiple failed login attempts
+- unauthorized admin access
 
-* Guest or logged-in user support
-* Secure database storage
-* Admin viewing system
+Expected result:
 
-### Business Benefits:
-
-* Improves communication
-* Centralises customer support
-* Enables response tracking
+Unauthorized access blocked.
 
 ---
 
-## 9. Accessibility System Justification
+## Performance Testing
 
-### Accessibility Features:
+Simulates heavy usage.
 
-* Text resizing
-* High contrast mode
-* Dyslexia-friendly font
-* Keyboard navigation
+Example:
 
-### Why Accessibility Was Implemented:
+500 customers purchasing at the same time.
 
-To ensure:
+Expected result:
 
-* WCAG compliance
-* Inclusivity
-* Legal accessibility compliance
-* Improved user experience
+System continues functioning without crashes.
 
 ---
 
-## 10. Responsive Design Justification
+## User Acceptance Testing (UAT)
 
-### Devices Supported:
+Real users test the system.
 
-* Mobile
-* Tablet
-* Desktop
+Participants:
 
-### Why Responsive Design Was Required:
+- staff
+- customers
+- admin users
 
-* Majority of users browse via mobile
-* Improves usability
-* Increases engagement
-* Improves SEO ranking
+Goal:
 
----
-
-# PART B — WEBSITE TEST LOG
-
-## 11. Testing Strategy
-
-Testing was conducted using **black-box testing** and **functional testing** methodologies to ensure:
-
-* Feature accuracy
-* Data integrity
-* Security
-* UX reliability
+Ensure system meets **business requirements**.
 
 ---
 
-## 12. Test Log Table
+## Prerequisites and Dependencies
 
-| Test ID | Feature            | Test Case            | Expected Result   | Actual Result | Status |
-| ------- | ------------------ | -------------------- | ----------------- | ------------- | ------ |
-| T01     | Registration       | Create new account   | Account created   | Successful    | PASS   |
-| T02     | Registration       | Duplicate email      | Error message     | Correct error | PASS   |
-| T03     | Login              | Correct credentials  | Login success     | Successful    | PASS   |
-| T04     | Login              | Incorrect password   | Error message     | Correct error | PASS   |
-| T05     | Logout             | Click logout         | Session destroyed | Logged out    | PASS   |
-| T06     | Role Security      | Access admin as user | Access denied     | Blocked       | PASS   |
-| T07     | Calculator         | Submit valid values  | Result calculated | Correct       | PASS   |
-| T08     | Calculator Logging | Submit calculation   | Saved to DB       | Saved         | PASS   |
-| T09     | Booking            | Submit booking       | Booking stored    | Stored        | PASS   |
-| T10     | Admin Bookings     | View bookings        | Table displayed   | Correct       | PASS   |
-| T11     | Contact            | Submit message       | Message stored    | Stored        | PASS   |
-| T12     | Admin Messages     | View messages        | Messages visible  | Correct       | PASS   |
-| T13     | Accessibility      | Toggle contrast      | Style change      | Working       | PASS   |
-| T14     | Responsive         | Resize browser       | Layout adapts     | Correct       | PASS   |
+Examples:
 
----
+Prerequisite:
 
-# 13. Conclusion
+- The database must be connected
+- user account must exist before login
 
-The Eco‑Site platform demonstrates **professional full‑stack development standards**, including:
+Dependencies:
 
-* Secure authentication
-* Role-based security
-* Clean architecture
-* Real-time calculations
-* Booking automation
-* Full admin control
-* Accessibility compliance
-* Responsive UI
+- payment gateway for checkout
+- supplier tracking system for delivery updates
 
-This system is **commercially deployable**, secure, scalable, and suitable for real‑world business deployment.
+# 5. Design Documentation
 
----
+This explains **how all designs link together**.
 
-# 14. Professional Evaluation
+The design documentation ensures developers understand how the system should be implemented.
 
-This project reflects:
+The system is structured using:
 
-* Industry-grade software architecture
-* Secure data handling
-* Enterprise-ready coding practices
-
-It is suitable for:
-
-* Commercial deployment
-* Business integration
-* Portfolio submission
-* Client demonstration
-
----
-
-**Prepared By:**
-Full‑Stack Developer
-
-**Project:** Eco‑Site Environmental Platform
+- **GUI designs** for user interaction
+- **algorithms** defining logic processes
+- **data structures** showing database requirements
+- **test strategy** ensuring reliability
