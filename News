@@ -1,3 +1,257 @@
+ Decomposition of the Problem
+
+The retail system will be divided into several **independent functional modules**. Each module handles a specific part of the system and communicates with the others through shared databases.
+
+This decomposition makes the system:
+
+- easier to develop
+- easier to test
+- easier to maintain
+- easier for multiple developers to work on.
+
+---
+
+ 1. Customer Account Management
+
+This module handles **customer authentication and account data**.
+
+Functions include:
+
+- customer registration
+- login authentication
+- password validation
+- profile management
+- loyalty point tracking
+
+**Input**
+
+- email
+- password
+- personal details
+
+**Process**
+
+- verify credentials
+- validate user data
+- store account details
+
+**Output**
+
+- successful login
+- account creation confirmation
+- updated profile
+
+This module interacts with the **Customer Database**.
+
+---
+
+# 2. Product Catalogue Management
+
+This module manages **all products available in the store**.
+
+Functions include:
+
+- product search
+- product filtering
+- product availability display
+- price display
+
+**Input**
+
+- search terms
+- category selection
+
+**Process**
+
+- retrieve product data from database
+- filter results
+
+**Output**
+
+- product listings
+- availability status
+
+This module connects to the **Product Database**.
+
+---
+
+# 3. Order and Checkout Processing
+
+This module manages **customer purchases**.
+
+Functions include:
+
+- shopping cart management
+- checkout processing
+- payment confirmation
+- order storage
+
+**Input**
+
+- selected products
+- quantity
+- payment information
+
+**Process**
+
+- check stock availability
+- calculate order total
+- apply loyalty discounts
+- store order
+
+**Output**
+
+- order confirmation
+- updated stock levels
+
+This module interacts with:
+
+- Product Database
+- Orders Database
+
+---
+
+# 4. Stock Management System
+
+This module manages **inventory levels and product availability**.
+
+Functions include:
+
+- stock level monitoring
+- expiry date tracking
+- restock alerts
+
+**Input**
+
+- sales data
+- delivery updates
+
+**Process**
+
+- update stock quantity
+- identify low stock items
+- detect expiring products
+
+**Output**
+
+- stock alerts
+- restock requests
+
+This module interacts with the **Inventory Database**.
+
+---
+
+# 5. Supplier Management System
+
+This module manages communication between the shop and suppliers.
+
+Functions include:
+
+- sending restock requests
+- receiving shipment confirmations
+- delivery tracking
+
+**Input**
+
+- low stock alerts
+- supplier updates
+
+**Process**
+
+- generate restock requests
+- update delivery status
+
+**Output**
+
+- restocking orders
+- delivery tracking information
+
+This module interacts with the **Supplier Database**.
+
+---
+
+# 6. Admin Analytics Dashboard
+
+This module provides **business insights to administrators**.
+
+Functions include:
+
+- sales analytics
+- stock performance tracking
+- product demand analysis
+- expiry alerts
+
+**Input**
+
+- sales records
+- stock data
+
+**Process**
+
+- aggregate sales information
+- analyse trends
+
+**Output**
+
+- performance graphs
+- stock reports
+- business insights
+
+This module helps management **make strategic decisions**.
+
+---
+
+# 7. Accessibility and User Interface System
+
+This module ensures the system is usable by a wide range of users.
+
+Features include:
+
+- responsive mobile design
+- adjustable text size
+- high contrast mode
+- screen reader compatibility
+
+This improves **usability and accessibility for customers**.
+
+---
+
+# Frontend vs Backend Decomposition
+
+The system can also be decomposed into two major layers.
+
+### Frontend (GUI)
+
+Handles user interaction:
+
+- login pages
+- product browsing
+- checkout interface
+- admin dashboard
+
+### Backend
+
+Handles system logic:
+
+- authentication
+- order processing
+- stock management
+- supplier communication
+- database operations
+
+---
+
+# Why Decomposition Is Important
+
+Breaking the system into modules allows:
+
+- developers to work on **different components simultaneously**
+- easier **debugging and testing**
+- better **system scalability**
+- clearer **developer handover documentation**
+
+
+
 
 | Section | Purpose |
 | --- | --- |
