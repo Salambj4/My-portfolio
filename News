@@ -1,510 +1,715 @@
-### 1. Hardware and Software in Education
 
-Examples:
-
-Hardware:
-
-- laptops
-- tablets
-- smartboards
-- servers
-- VR headsets
-
-Software:
-
-- learning platforms
-- assessment tools
-- collaboration tools
-
-Example systems:
-
-- Moodle
-- Google Classroom
-- Microsoft Teams
-
----
-
-### 2. Emerging Technology
-
-You should research **new technology used in learning**, like:
-
-- **AI learning assistants**
-- **VR/AR learning**
-- **mobile learning apps**
-- **cloud learning platforms**
-
-Example:
-
-AR science simulations where students interact with 3D models.
-
----
-
-### 3. How Digital Solutions Meet User Needs
-
-Different users:
-
-| User | Needs |
+| Section | Purpose |
 | --- | --- |
-| Students | learn subjects |
-| Tutors | track progress |
-| Parents | monitor results |
-| Admin | manage bookings |
+| Visual Design | Interface layout |
+| Algorithms | System logic |
+| Data Requirements | Database design |
+| Test Strategy | Validation plan |
+| Design Documentation | Explanation for developers |
 
-Example solution:
+# 1. Visual / Interface Design (GUI)
 
-Student dashboard showing:
+This shows **what the system looks like to users**.
 
-- lessons
-- quiz scores
-- progress graphs
+You should show **layout, accessibility and navigation**.
 
----
+### Customer Home Page
 
-### 4. Industry Guidelines and Regulations
+```
+--------------------------------------------------
+LOGO        Search Products          Login | Cart
+--------------------------------------------------
 
-Important rules:
+Categories:
+[Food] [Electronics] [Clothing] [Offers]
 
-**Accessibility**
+--------------------------------------------------
+Product Name
+Price: £12.99
+Stock: Available
 
-- WCAG
-- W3C standards
+[Add to Cart]
+--------------------------------------------------
 
-**Data protection**
+Footer:
+Contact | Help | Accessibility Settings
+```
 
-- GDPR
+### Checkout Page
 
-**Security**
+```
+-------------------------------------
+Shopping Cart
+-------------------------------------
 
-- HTTPS
-- encryption
-- secure login
+Product        Quantity      Price
+Apple Juice       2           £5.00
+Chocolate         1           £2.50
 
----
+Total: £7.50
 
-# Activity A(ii) — The Proposal (Most Important Part)
+Loyalty Points Available: 120
 
-This is where **most marks come from**.
+[Apply Loyalty Discount]
 
-You must design a **digital solution idea** and explain it.
-
-Your proposal must include:
-
----
-
-# 1. Business Context
-
-Explain **the company and the problem**.
-
-Example:
-
-GibJohn Tutoring currently offers:
-
-- face-to-face lessons
-- learning resources
-- academic support
-
-However they want a **digital platform** to:
-
-- expand learning
-- monitor progress
-- allow interactive learning
-
-So your solution must solve this.
-
----
-
-# 2. Description of the Proposed Solution
-
-Explain the **system you will build**.
-
-Example solution:
-
-A **web-based learning platform**.
-
-Features:
-
-Student features
-
-- login
-- view lessons
-- take quizzes
-- track progress
-- earn rewards
-
-Tutor features
-
-- upload resources
-- monitor student performance
-- create quizzes
-
-Admin features
-
-- manage users
-- schedule lessons
-- manage rewards
-
----
-
-# 3. Functional Requirements
-
-These describe **what the system must do**.
-
-Examples:
-
-- users can **register accounts**
-- students can **access learning materials**
-- tutors can **upload content**
-- system can **track progress**
-- system can **generate quizzes**
-- reward points are given for completion
-
----
-
-# 4. Non-Functional Requirements
-
-These describe **how well the system works**.
-
-Examples:
-
-Performance
-
-- pages load in under 2 seconds
-
-Security
-
-- encrypted login
-
-Accessibility
-
-- adjustable text size
-- screen reader compatibility
-
-Compatibility
-
-- works on phones, tablets, and PCs
-
----
-
-# 5. Decomposition of the Problem
-
-Break the system into **smaller problems**.
-
-Example:
-
-Main system:
-
-Learning Platform
-
-Sub systems:
-
-1 User management
-2 Learning content system
-3 Assessment system
-4 Progress tracking
-5 Reward system
-
-Each has smaller processes.
-
-Example:
-
-User Management
-
-- registration
-- login
-- password reset
-- role assignment
-
-The mark scheme specifically expects **problem decomposition**.
-
----
-
-# 6. KPIs (Key Performance Indicators)
-
-These measure **system success**.
-
-Examples:
-
-- 90% of students complete quizzes
-- 80% user satisfaction
-- 1000 active users within 6 months
-- system uptime 99%
-
----
-
-# 7. User Acceptance Criteria
-
-These define **what must work before the client accepts the system**.
-
-Examples:
-
-- student can log in
-- student can complete quizzes
-- tutor can upload lessons
-- progress tracking displays correctly
-
----
-
-# 8. Risks + Mitigation
-
-The mark scheme expects **security risks**.
-
-Examples:
-
-### SQL Injection
-
-Risk:
-Hackers accessing database
-
-Solution:
-
-- input sanitisation
-- prepared SQL statements
-
----
-
-### Cross Site Scripting (XSS)
-
-Risk:
-Malicious scripts in forms
-
-Solution:
-
-- input validation
-- escaping output
-
----
-
-### Man-in-the-Middle attack
-
-Risk:
-Data interception
-
-Solution:
-
-- HTTPS
-- SSL encryption
-
----
-
-# 9. Legal and Ethical Considerations
-
-Important in education systems.
-
-Examples:
-
-**GDPR**
-
-- student data must be protected
-- parental consent if under 18
-
-**Copyright**
-
-- learning materials must not be illegally copied
-
-**Accessibility**
-
-- comply with WCAG
-
-
-
-
-## 1. Overview of the Proposed System
-
-The proposed solution is a **Retail Management System** designed to manage product sales, stock levels, supplier coordination and customer purchases.
-
-The system will allow:
-
-- Customers to create accounts and purchase products
-- Admin staff to monitor business performance
-- Staff to track supplier deliveries
-- Suppliers to view restock requests
-- Customers to receive loyalty rewards
-
-The system will operate as a **web-based platform** accessible on both **desktop and mobile devices**, ensuring flexibility for customers and staff.
-
-The system will consist of two main parts:
-
-- **Frontend (GUI)** – user interface for customers, staff, suppliers and admin
-- **Backend** – server-side logic handling authentication, stock management and data processing.
-
----
-
-## 2. Target Users
-
-### Customers
-
-Customers will use the system to:
-
-- create accounts
-- browse products
-- purchase items
-- track loyalty rewards
-- view purchase history
-
-### Staff
-
-Staff will use the system to:
-
-- monitor stock levels
-- track supplier deliveries
-- receive stock updates
-- identify items needing restocking
-
-### Admin
-
-Admins will access a dashboard containing:
-
-- sales analytics
-- stock levels
-- product availability
-- expiry monitoring
-- supplier data
-
-### Suppliers
-
-Suppliers will access restocking information including:
-
-- items requiring restocking
-- order quantities
-- delivery status
-- shipment tracking
-
----
-
-## 3. Key System Features
-
-### Customer Account System
-
-Customers can:
-
-- create accounts
-- log in securely
-- manage personal details
-- access loyalty rewards
-
-Passwords will be securely stored using **hashed encryption**.
-
----
-
-### Product Catalogue
-
-The system will store all products with:
-
-- product name
-- price
-- stock quantity
-- expiry date
-- availability status
-
-Customers can search and filter products before purchasing.
-
----
-
-### Checkout & Payment System
-
-Customers can:
-
-- add products to a basket
-- review total cost
-- complete purchases at checkout
-
-The system will automatically:
-
-- verify stock availability
-- calculate total price
-- update inventory after purchase
-
----
-
-### Loyalty Reward System
-
-Customers earn **loyalty points** after purchases.
-
-Points can later be used for:
-
-- discounts
-- rewards
-- promotional offers
-
-This feature helps **retain customers and encourage repeat purchases**.
-
----
-
-### Stock Management
-
-The system will continuously track stock levels.
-
-Features include:
-
-- real-time stock monitoring
-- automatic restock alerts
-- expiry date tracking
-- unavailable product detection
-
----
-
-### Supplier Integration
-
-Suppliers will receive notifications when stock reaches a **restocking threshold**.
-
-They can:
-
-- confirm restock orders
-- update shipment progress
-- provide delivery tracking information
-
-Staff can track delivery progress to estimate **restocking arrival times**.
+[Proceed to Payment]
+```
 
 ---
 
 ### Admin Dashboard
 
-Admins will have access to a central dashboard displaying:
+```
+------------------------------------------------
+ADMIN DASHBOARD
+------------------------------------------------
 
-- sales performance
-- stock growth trends
-- items close to expiry
-- product availability
-- supplier activity
+Sales Today: £2,350
+Stock Alerts: 6
+Expiring Soon: 12
 
-This helps support **business decision-making and inventory planning**.
+------------------------------------------------
+Analytics
+------------------------------------------------
+Sales Growth Graph
+Top Selling Products
+
+------------------------------------------------
+Stock Monitoring
+------------------------------------------------
+Product        Stock      Status
+Milk            5         Low
+Rice           30         OK
+Yogurt          2         Expiring Soon
+```
 
 ---
 
-## 4. Accessibility Features
+### Accessibility Features
 
-The system will support a wide range of accessibility features including:
+Interface includes:
 
-- adjustable text sizes
-- high contrast colour mode
+- text size adjustment
+- colour contrast mode
 - screen reader compatibility
 - keyboard navigation
-- mobile responsive design
-
-These features ensure the system is usable by a wide range of customers.
+- mobile responsive layout
 
 ---
 
-## 5. System Benefits
+# 2. Algorithm Designs (Logic)
 
-The proposed system provides several benefits for the retail company.
+These explain **how important processes work**.
 
-### Improved stock control
+---
 
-Automatic stock tracking helps reduce:
+## Algorithm 1 — Customer Login
 
-- overstocking
-- stock shortages
-- expired product sales
+Step-by-step logic:
 
-### Improved customer experience
+```
+START
 
-Customers can easily browse and purchase products while earning loyalty rewards.
+User enters email and password
 
-### Better supplier coordination
+System checks Customer Database
 
-Suppliers receive automated restocking information, improving delivery efficiency.
+IF email does not exist
+    Display "Account not found"
+ELSE
+    IF password incorrect
+        Display "Incorrect password"
+    ELSE
+        Login successful
+        Open customer dashboard
+END
+```
 
-### Business insights
+---
 
-The admin dashboard allows the company to monitor sales performance and product demand.
+## Algorithm 2 — Create Account
+
+```
+START
+
+User enters name, email, password
+
+Check if email already exists
+
+IF email exists
+    Display error message
+ELSE
+    Validate password strength
+
+    IF password weak
+        Request stronger password
+    ELSE
+        Save user details to database
+        Account created
+END
+```
+
+---
+
+## Algorithm 3 — Product Purchase
+
+```
+START
+
+Customer selects product
+Add product to cart
+
+Customer proceeds to checkout
+
+Check product stock
+
+IF stock = 0
+    Display "Out of stock"
+ELSE
+    Calculate total price
+    Apply loyalty discount
+
+    Process payment
+
+    IF payment fails
+        Display payment error
+    ELSE
+        Update stock quantity
+        Add loyalty points
+        Save order record
+END
+```
+
+---
+
+## Algorithm 4 — Automatic Restocking
+
+```
+START
+
+System checks stock levels
+
+IF stock below threshold
+    Generate restock request
+
+Send request to supplier
+
+Supplier confirms shipment
+
+Staff track delivery location
+
+When stock arrives
+    Update inventory
+END
+```
+
+---
+
+## Flowchart 1 — Customer Login
+
+```
+START
+↓
+User enters email and password
+↓
+System searches customer database
+↓
+Email found?
+
+NO → Display "Account not found"
+      Return to login
+
+YES
+↓
+Check password
+
+Password correct?
+
+NO → Display "Incorrect password"
+
+YES → Login successful
+      Open customer dashboard
+↓
+END
+```
+
+---
+
+## Flowchart 2 — Customer Registration
+
+```
+START
+↓
+Customer enters:
+
+Name
+Email
+Password
+Phone
+↓
+System validates data
+↓
+Email already exists?
+
+YES → Show "Account already exists"
+
+NO
+↓
+Password valid?
+
+NO → Request stronger password
+
+YES
+↓
+Store account in database
+↓
+Display "Account created successfully"
+↓
+END
+```
+
+---
+
+## Flowchart 3 — Purchase Product
+
+```
+START
+↓
+Customer selects product
+↓
+Add item to cart
+↓
+Customer selects checkout
+↓
+Check stock availability
+
+Stock available?
+
+NO → Display "Out of stock"
+
+YES
+↓
+Calculate total price
+↓
+Apply loyalty rewards
+↓
+Process payment
+
+Payment successful?
+
+NO → Payment failed
+
+YES
+↓
+Update product stock
+↓
+Store order in database
+↓
+Display confirmation
+↓
+END
+```
+
+---
+
+## Flowchart 4 — Admin Dashboard Access
+
+```
+START
+↓
+Admin enters credentials
+↓
+System checks admin database
+↓
+Credentials valid?
+
+NO → Access denied
+
+YES
+↓
+Load dashboard data
+
+Sales analytics
+Stock levels
+Expiry alerts
+Supplier status
+↓
+Display dashboard
+↓
+END
+```
+
+---
+
+## Flowchart 5 — Supplier Restocking
+
+```
+START
+↓
+System monitors stock
+↓
+Stock below threshold?
+
+NO → Continue monitoring
+
+YES
+↓
+Generate restock request
+↓
+Send request to supplier
+↓
+Supplier confirms shipment
+↓
+Staff track delivery location
+↓
+Stock received
+↓
+Update inventory
+↓
+END
+```
+
+---
+
+# 2. Data Flow Diagrams (DFD)
+
+Each DFD shows:
+
+- **External entities**
+- **Process**
+- **Data store**
+- **Data flow arrows with labels**
+
+---
+
+## DFD 1 — Customer Login
+
+External Entity
+
+Customer
+
+Process
+
+Login Authentication System
+
+Data Store
+
+Customer Database
+
+Data flows:
+
+```
+Customer
+   │
+   │ enters email & password
+   ↓
+Login System
+   │
+   │ verify credentials
+   ↓
+Customer Database
+   │
+   │ return account details
+   ↓
+Login System
+   │
+   │ authentication result
+   ↓
+Customer
+```
+
+Arrow descriptions:
+
+- Enter login credentials
+- Verify user account
+- Retrieve user data
+- Return authentication result
+
+---
+
+## DFD 2 — Product Purchase
+
+External Entity
+
+Customer
+
+Process
+
+Order Processing System
+
+Data Stores
+
+- Product Database
+- Orders Database
+
+```
+Customer
+   │
+   │ select product
+   ↓
+Order Processing System
+   │
+   │ check stock level
+   ↓
+Product Database
+   │
+   │ return product availability
+   ↓
+Order Processing System
+   │
+   │ save order record
+   ↓
+Orders Database
+   │
+   │ confirmation details
+   ↓
+Customer
+```
+
+Arrow descriptions:
+
+- Product selection request
+- Stock verification
+- Product availability response
+- Order storage
+- Purchase confirmation
+
+---
+
+## DFD 3 — Supplier Restocking
+
+External Entities
+
+- Supplier
+- Staff
+
+Process
+
+Stock Management System
+
+Data Stores
+
+- Inventory Database
+- Supplier Database
+
+```
+Inventory Database
+   │
+   │ stock level data
+   ↓
+Stock Management System
+   │
+   │ restock request
+   ↓
+Supplier
+   │
+   │ shipment update
+   ↓
+Stock Management System
+   │
+   │ delivery status
+   ↓
+Staff
+```
+
+Arrow descriptions:
+
+- Monitor stock levels
+- Generate restock request
+- Delivery tracking update
+- Display supplier status
+
+---
+
+# 3. Hierarchy Diagrams
+
+Hierarchy diagrams show **system decomposition**.
+
+Each hierarchy splits into **GUI vs Backend**.
+
+---
+
+## Hierarchy 1 — Customer System
+
+```
+Customer System
+│
+├── GUI
+│     ├ Register Account Page
+│     ├ Login Page
+│     ├ Product Catalogue
+│     ├ Shopping Cart
+│     └ Checkout Page
+│
+└── Backend
+      ├ Account Authentication
+      ├ Product Retrieval
+      ├ Order Processing
+      ├ Loyalty Points Calculation
+      └ Database Storage
+```
+
+---
+
+## Hierarchy 2 — Admin System
+
+```
+Admin Dashboard
+│
+├── GUI
+│     ├ Sales Analytics Dashboard
+│     ├ Stock Monitoring Page
+│     ├ Product Management Page
+│     └ Supplier Monitoring Page
+│
+└── Backend
+      ├ Sales Data Analysis
+      ├ Inventory Monitoring
+      ├ Expiry Detection
+      └ Supplier Data Processing
+```
+
+---
+
+## Hierarchy 3 — Supplier System
+
+```
+Supplier Management
+│
+├── GUI
+│     ├ Restock Request Page
+│     ├ Delivery Status Page
+│     └ Shipment Confirmation Page
+│
+└── Backend
+      ├ Stock Threshold Monitoring
+      ├ Supplier Communication System
+      └ Delivery Tracking System
+```
+
+---
+
+# Data Requirements
+
+This table shows:
+
+- **data input**
+- **data type**
+- **validation rules**
+
+| Data Item | Description | Data Type | Validation |
+| --- | --- | --- | --- |
+| Customer Name | name of customer | String | must contain letters only |
+| Email Address | login email | String | must contain "@" and valid domain |
+| Password | user password | String | minimum 8 characters |
+| Phone Number | contact number | Integer/String | must contain 10–11 digits |
+| Product Name | item name | String | cannot be empty |
+| Product Price | item price | Decimal | must be greater than 0 |
+| Stock Quantity | number of items | Integer | must be positive |
+| Expiry Date | product expiry | Date | must be future date |
+| Order Total | total purchase cost | Decimal | automatically calculated |
+
+---
+
+# Test Strategy
+
+Testing ensures the system works correctly and securely.
+
+---
+
+## Unit Testing
+
+Individual components tested separately.
+
+| Test Case | Input | Expected Result |
+| --- | --- | --- |
+| Login valid user | correct email/password | login successful |
+| Login wrong password | incorrect password | error message |
+| Add product to cart | valid product | item added to cart |
+
+---
+
+## Validation Testing
+
+Checks invalid input.
+
+| Test | Input | Expected Outcome |
+| --- | --- | --- |
+| Invalid email | usergmail.com | error message |
+| Weak password | 1234 | rejected |
+| Negative stock | -10 | validation error |
+
+---
+
+## Security Testing
+
+Tests protection against attacks.
+
+Examples:
+
+- SQL injection attempts
+- multiple failed login attempts
+- unauthorized admin access
+
+Expected result:
+
+Unauthorized access blocked.
+
+---
+
+## Performance Testing
+
+Simulates heavy usage.
+
+Example:
+
+500 customers purchasing at the same time.
+
+Expected result:
+
+System continues functioning without crashes.
+
+---
+
+## User Acceptance Testing (UAT)
+
+Real users test the system.
+
+Participants:
+
+- staff
+- customers
+- admin users
+
+Goal:
+
+Ensure system meets **business requirements**.
+
+---
+
+## Prerequisites and Dependencies
+
+Examples:
+
+Prerequisite:
+
+- The database must be connected
+- user account must exist before login
+
+Dependencies:
+
+- payment gateway for checkout
+- supplier tracking system for delivery updates
+
+# 5. Design Documentation
+
+This explains **how all designs link together**.
+
+The design documentation ensures developers understand how the system should be implemented.
+
+The system is structured using:
+
+- **GUI designs** for user interaction
+- **algorithms** defining logic processes
+- **data structures** showing database requirements
+- **test strategy** ensuring reliability
