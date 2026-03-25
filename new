@@ -1,1 +1,175 @@
-new
+<!-- =========================
+SETUP INSTRUCTIONS
+1. Install XAMPP
+2. Place this folder in htdocs
+3. Start Apache & MySQL
+4. Go to phpMyAdmin and run schema below
+========================= -->
+
+<!-- =========================
+DATABASE (schema.sql)
+========================= -->
+
+CREATE DATABASE shop;
+USE shop;
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(100),
+  password VARCHAR(255),
+  loyalty_points INT DEFAULT 0
+);
+
+CREATE TABLE products (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  price DECIMAL(10,2),
+  stock INT
+);
+
+CREATE TABLE orders (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  total DECIMAL(10,2)
+);
+
+INSERT INTO products (name, price, stock) VALUES
+('Protein Bar', 2.50, 10),
+('Energy Drink', 1.80, 15);
+
+<!-- =========================
+DB CONNECTION (db.php)
+========================= -->
+
+<?php
+$conn = mysqli_connect("localhost", "root", "", "shop");
+?>
+
+<!-- =========================
+REGISTER (register.php)
+========================= -->
+
+<?php include 'db.php'; ?>
+<form method="POST">
+<input name="email" required>
+<input name="password" type="password" required>
+<button name="register">Register</button>
+</form>
+
+<?php
+if(isset($_POST['register'])){
+  $email = $_POST['email'];
+  $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+  mysqli_query($conn, "INSERT INTO users (email,password) VALUES ('$email','$password')");
+  echo "Registered";
+}
+?>
+
+<!-- =========================
+LOGIN (login.php)
+========================= -->
+
+<?php session_start(); include 'db.php'; ?>
+<form method="POST">
+<input name="email" required>
+<input name="password" type="password" required>
+<button name="login">Login</button>
+</form>
+
+<?php
+if(isset($_POST['login'])){
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+
+  $res = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
+  $user = mysqli_fetch_assoc($res);
+
+  if($user && password_verify($password, $user['password'])){
+    $_SESSION['user'] = $user['id'];
+    header("Location: shop.php");
+  } else {
+    echo "Invalid";
+  }
+}
+?>
+
+<!-- =========================
+SHOP (shop.php)
+========================= -->
+
+<?php session_start(); include 'db.php'; ?>
+<h2>Shop</h2>
+<div id="cart-count">0</div>
+
+<?php
+$res = mysqli_query($conn, "SELECT * FROM products");
+while($row = mysqli_fetch_assoc($res)){
+  echo "<p>{$row['name']} £{$row['price']} Stock: {$row['stock']} ";
+  echo "<button onclick='addToCart({$row['id']})'>Add</button></p>";
+}
+?>
+
+<button onclick="checkout()">Checkout</button>
+
+<script>
+let cart = [];
+
+function addToCart(id){
+  cart.push(id);
+  document.getElementById('cart-count').innerText = cart.length;
+}
+
+function checkout(){
+  fetch('checkout.php',{
+    method:'POST',
+    body: JSON.stringify(cart)
+  })
+  .then(res=>res.text())
+  .then(data=>alert(data));
+}
+</script>
+
+<!-- =========================
+CHECKOUT (checkout.php)
+========================= -->
+
+<?php session_start(); include 'db.php';
+$data = json_decode(file_get_contents("php://input"), true);
+$total = 0;
+
+foreach($data as $id){
+  $res = mysqli_query($conn, "SELECT * FROM products WHERE id=$id");
+  $p = mysqli_fetch_assoc($res);
+
+  if($p['stock'] <= 0){ die("Out of stock"); }
+
+  $total += $p['price'];
+  mysqli_query($conn, "UPDATE products SET stock=stock-1 WHERE id=$id");
+}
+
+$user = $_SESSION['user'];
+mysqli_query($conn, "INSERT INTO orders (user_id,total) VALUES ($user,$total)");
+
+echo "Order placed. Total: £$total";
+?>
+
+<!-- =========================
+ADMIN (admin.php)
+========================= -->
+
+<?php include 'db.php'; ?>
+<h2>Admin Dashboard</h2>
+
+<?php
+$res = mysqli_query($conn, "SELECT SUM(total) as revenue FROM orders");
+$data = mysqli_fetch_assoc($res);
+
+echo "Total Revenue: £".$data['revenue'];
+?>
+
+<!-- =========================
+CSS (style.css)
+========================= -->
+
+body{font-family:Arial;}
+button{padding:5px;margin:5px;}
