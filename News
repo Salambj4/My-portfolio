@@ -1,969 +1,1238 @@
- Decomposition of the Problem
+CREATE DATABASE retail_system;
+
+USE retail_system;
+
+-- Users
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    role VARCHAR(20) DEFAULT 'customer'
+);
+
+-- Products
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    price DECIMAL(10,2),
+    stock INT,
+    image VARCHAR(255)
+);
+
+-- Orders
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    total DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Cart
+CREATE TABLE cart (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    product_id INT,
+    quantity INT
+);
+
+-- Contact messages
+CREATE TABLE enquiries (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    message TEXT
+);
+
+
 
-The retail system will be divided into several **independent functional modules**. Each module handles a specific part of the system and communicates with the others through shared databases.
+<---db.php--->
+<?php
+$conn = new mysqli("localhost", "root", "", "retail_system");
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
+
+
+<----index--->
+<?php include("includes/header.php"); ?>
+
+<div class="container mt-4">
+<h1>Welcome to Our Store</h1>
+<p>Browse products and enjoy rewards!</p>
+</div>
+
+<?php include("includes/footer.php"); ?>
+
+<---header--->
+<?php session_start(); ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Retail System</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container">
+
+<a class="navbar-brand" href="index.php">Store</a>
+
+<form class="d-flex" action="shop.php" method="GET">
+    <input class="form-control me-2" type="search" name="search" placeholder="Search">
+</form>
+
+<ul class="navbar-nav ms-auto">
+
+<li class="nav-item">
+<a href="cart.php" class="nav-link">
+🛒 Cart <span class="badge bg-danger">
+<?php echo isset($_SESSION['cart_count']) ? $_SESSION['cart_count'] : 0; ?>
+</span>
+</a>
+</li>
+
+<li class="nav-item"><a href="auth/login.php" class="nav-link">👤</a></li>
+
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Accessibility</a>
+<ul class="dropdown-menu">
+<li><a class="dropdown-item" href="#">High Contrast</a></li>
+<li><a class="dropdown-item" href="#">Keyboard Nav</a></li>
+<li><a class="dropdown-item" href="#">Screen Reader</a></li>
+<li><a class="dropdown-item" href="#">Magnify</a></li>
+<li><a class="dropdown-item" href="accessibility.php">Help</a></li>
+</ul>
+</li>
 
-This decomposition makes the system:
+</ul>
+</div>
+</nav>
 
-- easier to develop
-- easier to test
-- easier to maintain
-- easier for multiple developers to work on.
+<--footer-->
+<footer class="bg-dark text-white text-center p-3 mt-5">
+    <p>© 2026 Retail System</p>
+</footer>
 
----
+<script src="assets/js/script.js"></script>
+</body>
+</html>
 
- 1. Customer Account Management
 
-This module handles **customer authentication and account data**.
 
-Functions include:
 
-- customer registration
-- login authentication
-- password validation
-- profile management
-- loyalty point tracking
+<--index.php-->
+<?php include("includes/header.php"); ?>
 
-**Input**
+<div class="container mt-4">
+<h1>Welcome to Our Store</h1>
+<p>Browse products and enjoy rewards!</p>
+</div>
 
-- email
-- password
-- personal details
+<?php include("includes/footer.php"); ?>
 
-**Process**
 
-- verify credentials
-- validate user data
-- store account details
 
-**Output**
 
-- successful login
-- account creation confirmation
-- updated profile
+<--cart-->
+<?php
+session_start();
+include("includes/header.php");
+include("includes/db.php");
 
-This module interacts with the **Customer Database**.
+// ADD TO CART
+if(isset($_POST['product_id'])){
+    $pid = $_POST['product_id'];
+    $qty = $_POST['quantity'];
 
----
+    if(isset($_SESSION['cart'][$pid])){
+        $_SESSION['cart'][$pid] += $qty;
+    } else {
+        $_SESSION['cart'][$pid] = $qty;
+    }
 
-# 2. Product Catalogue Management
+    $_SESSION['cart_count'] = array_sum($_SESSION['cart']);
+}
 
-This module manages **all products available in the store**.
+// REMOVE ITEM
+if(isset($_GET['remove'])){
+    unset($_SESSION['cart'][$_GET['remove']]);
+    $_SESSION['cart_count'] = array_sum($_SESSION['cart']);
+}
+?>
 
-Functions include:
+<div class="container mt-4">
+<h2>Your Cart</h2>
 
-- product search
-- product filtering
-- product availability display
-- price display
+<table class="table">
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Qty</th>
+<th>Total</th>
+<th>Action</th>
+</tr>
 
-**Input**
+<?php
+$total = 0;
 
-- search terms
-- category selection
+if(!empty($_SESSION['cart'])){
 
-**Process**
+foreach($_SESSION['cart'] as $pid => $qty){
 
-- retrieve product data from database
-- filter results
+    $result = $conn->query("SELECT * FROM products WHERE id=$pid");
+    $product = $result->fetch_assoc();
 
-**Output**
+    $sub = $product['price'] * $qty;
+    $total += $sub;
+?>
 
-- product listings
-- availability status
+<tr>
+<td><?php echo $product['name']; ?></td>
+<td>£<?php echo $product['price']; ?></td>
+<td><?php echo $qty; ?></td>
+<td>£<?php echo $sub; ?></td>
+<td><a href="cart.php?remove=<?php echo $pid; ?>" class="btn btn-danger">Remove</a></td>
+</tr>
 
-This module connects to the **Product Database**.
+<?php } } ?>
 
----
+</table>
 
-# 3. Order and Checkout Processing
+<h3>Total: £<?php echo $total; ?></h3>
 
-This module manages **customer purchases**.
+<a href="checkout.php" class="btn btn-success">Checkout</a>
 
-Functions include:
+</div>
 
-- shopping cart management
-- checkout processing
-- payment confirmation
-- order storage
+<?php include("includes/footer.php"); ?>
 
-**Input**
 
-- selected products
-- quantity
-- payment information
 
-**Process**
 
-- check stock availability
-- calculate order total
-- apply loyalty discounts
-- store order
+----cart---
+<?php 
+include("includes/header.php");
+include("includes/db.php");
 
-**Output**
+$result = $conn->query("SELECT * FROM products");
+?>
 
-- order confirmation
-- updated stock levels
+<div class="container mt-4">
+<div class="row">
 
-This module interacts with:
+<?php while($row = $result->fetch_assoc()) { ?>
+<div class="col-md-3">
+<div class="card">
 
-- Product Database
-- Orders Database
+<img src="assets/images/<?php echo $row['image']; ?>" class="card-img-top">
 
----
+<div class="card-body">
+<h5><?php echo $row['name']; ?></h5>
+<p>£<?php echo $row['price']; ?></p>
 
-# 4. Stock Management System
+<form action="cart.php" method="POST">
+<input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
+<input type="number" name="quantity" value="1" min="1">
+<button class="btn btn-primary">Add to Cart</button>
+</form>
 
-This module manages **inventory levels and product availability**.
+</div>
+</div>
+</div>
+<?php } ?>
 
-Functions include:
+</div>
+</div>
 
-- stock level monitoring
-- expiry date tracking
-- restock alerts
+<?php include("includes/footer.php"); ?>
 
-**Input**
 
-- sales data
-- delivery updates
+<--checkout-->
+<?php include("includes/header.php"); ?>
 
-**Process**
+<div class="container mt-4">
+<h2>Checkout</h2>
 
-- update stock quantity
-- identify low stock items
-- detect expiring products
+<form action="process_order.php" method="POST">
 
-**Output**
+<input type="text" name="address" placeholder="Delivery Address" class="form-control mb-3" required>
 
-- stock alerts
-- restock requests
+<input type="text" name="card" placeholder="Card Number" class="form-control mb-3" required>
 
-This module interacts with the **Inventory Database**.
+<button class="btn btn-primary">Place Order</button>
 
----
+</form>
 
-# 5. Supplier Management System
+</div>
 
-This module manages communication between the shop and suppliers.
+<?php include("includes/footer.php"); ?>
 
-Functions include:
 
-- sending restock requests
-- receiving shipment confirmations
-- delivery tracking
 
-**Input**
 
-- low stock alerts
-- supplier updates
+---login----
 
-**Process**
+<?php
+include("../includes/db.php");
 
-- generate restock requests
-- update delivery status
+if($_SERVER["REQUEST_METHOD"] == "POST") {
 
-**Output**
+$email = $_POST['email'];
+$password = $_POST['password'];
 
-- restocking orders
-- delivery tracking information
+$sql = "SELECT * FROM users WHERE email='$email'";
+$result = $conn->query($sql);
 
-This module interacts with the **Supplier Database**.
+if($result->num_rows > 0){
+    $user = $result->fetch_assoc();
 
----
+    if(password_verify($password, $user['password'])){
+        session_start();
+        $_SESSION['user'] = $user;
 
-# 6. Admin Analytics Dashboard
+        if($user['role'] == "admin"){
+            header("Location: ../admin/dashboard.php");
+        } else {
+            header("Location: ../index.php");
+        }
+    }
+}
+}
+?>
 
-This module provides **business insights to administrators**.
 
-Functions include:
 
-- sales analytics
-- stock performance tracking
-- product demand analysis
-- expiry alerts
 
-**Input**
 
-- sales records
-- stock data
+----admin----
+<?php include("../includes/header.php"); include("../includes/db.php"); ?>
 
-**Process**
+<div class="container mt-4">
+<h2>Admin Dashboard</h2>
 
-- aggregate sales information
-- analyse trends
+<?php
+$totalProducts = $conn->query("SELECT COUNT(*) as total FROM products")->fetch_assoc();
+?>
 
-**Output**
+<p>Total Products: <?php echo $totalProducts['total']; ?></p>
 
-- performance graphs
-- stock reports
-- business insights
+</div>
 
-This module helps management **make strategic decisions**.
+<?php include("../includes/footer.php"); ?>
 
----
 
-# 7. Accessibility and User Interface System
 
-This module ensures the system is usable by a wide range of users.
 
-Features include:
 
-- responsive mobile design
-- adjustable text size
-- high contrast mode
-- screen reader compatibility
 
-This improves **usability and accessibility for customers**.
+---------
 
----
 
-# Frontend vs Backend Decomposition
 
-The system can also be decomposed into two major layers.
 
-### Frontend (GUI)
+<--process-->
+<?php
+session_start();
+include("includes/db.php");
 
-Handles user interaction:
+$user_id = $_SESSION['user']['id'];
+$address = $_POST['address'];
 
-- login pages
-- product browsing
-- checkout interface
-- admin dashboard
+$total = 0;
 
-### Backend
+// CALCULATE TOTAL
+foreach($_SESSION['cart'] as $pid => $qty){
+    $res = $conn->query("SELECT * FROM products WHERE id=$pid");
+    $product = $res->fetch_assoc();
 
-Handles system logic:
+    $total += $product['price'] * $qty;
+}
 
-- authentication
-- order processing
-- stock management
-- supplier communication
-- database operations
+// CREATE ORDER
+$conn->query("INSERT INTO orders (user_id, total, address)
+VALUES ($user_id, $total, '$address')");
 
----
+$order_id = $conn->insert_id;
 
-# Why Decomposition Is Important
+// LOOP PRODUCTS
+foreach($_SESSION['cart'] as $pid => $qty){
 
-Breaking the system into modules allows:
+    $res = $conn->query("SELECT * FROM products WHERE id=$pid");
+    $product = $res->fetch_assoc();
 
-- developers to work on **different components simultaneously**
-- easier **debugging and testing**
-- better **system scalability**
-- clearer **developer handover documentation**
+    $price = $product['price'];
 
+    // SAVE ORDER ITEM
+    $conn->query("INSERT INTO order_items (order_id, product_id, quantity, price)
+    VALUES ($order_id, $pid, $qty, $price)");
 
+    // UPDATE STOCK
+    $conn->query("UPDATE products SET stock = stock - $qty WHERE id=$pid");
 
+    // 🔥 SUPPLIER NOTIFICATION
+    if($product['stock'] - $qty < 5){
+        $conn->query("INSERT INTO supplier_notifications 
+        (supplier_id, product_id, message)
+        VALUES ({$product['supplier_id']}, $pid, 'Restock needed')");
+    }
+}
 
-| Section | Purpose |
-| --- | --- |
-| Visual Design | Interface layout |
-| Algorithms | System logic |
-| Data Requirements | Database design |
-| Test Strategy | Validation plan |
-| Design Documentation | Explanation for developers |
+// CLEAR CART
+unset($_SESSION['cart']);
+$_SESSION['cart_count'] = 0;
 
-# 1. Visual / Interface Design (GUI)
+// GO TO RECEIPT
+header("Location: receipt.php?order_id=$order_id");
 
-This shows **what the system looks like to users**.
 
-You should show **layout, accessibility and navigation**.
+<--recipt-->
+<?php
+include("includes/header.php");
+include("includes/db.php");
 
-### Customer Home Page
+$order_id = $_GET['order_id'];
 
-```
---------------------------------------------------
-LOGO        Search Products          Login | Cart
---------------------------------------------------
+$order = $conn->query("SELECT * FROM orders WHERE id=$order_id")->fetch_assoc();
+$items = $conn->query("SELECT * FROM order_items WHERE order_id=$order_id");
+?>
 
-Categories:
-[Food] [Electronics] [Clothing] [Offers]
+<div class="container mt-4">
+<h2>Receipt</h2>
 
---------------------------------------------------
-Product Name
-Price: £12.99
-Stock: Available
+<p><strong>Order ID:</strong> <?php echo $order_id; ?></p>
+<p><strong>Total:</strong> £<?php echo $order['total']; ?></p>
+<p><strong>Address:</strong> <?php echo $order['address']; ?></p>
 
-[Add to Cart]
---------------------------------------------------
+<table class="table">
+<tr>
+<th>Product</th>
+<th>Qty</th>
+<th>Price</th>
+</tr>
 
-Footer:
-Contact | Help | Accessibility Settings
-```
+<?php while($item = $items->fetch_assoc()){ 
+$product = $conn->query("SELECT name FROM products WHERE id=".$item['product_id'])->fetch_assoc();
+?>
 
-### Checkout Page
+<tr>
+<td><?php echo $product['name']; ?></td>
+<td><?php echo $item['quantity']; ?></td>
+<td>£<?php echo $item['price']; ?></td>
+</tr>
 
-```
--------------------------------------
-Shopping Cart
--------------------------------------
+<?php } ?>
 
-Product        Quantity      Price
-Apple Juice       2           £5.00
-Chocolate         1           £2.50
+</table>
 
-Total: £7.50
+</div>
 
-Loyalty Points Available: 120
+<?php include("includes/footer.php"); ?>
 
-[Apply Loyalty Discount]
 
-[Proceed to Payment]
-```
 
----
+<--supplier-->
+<?php
+include("../includes/header.php");
+include("../includes/db.php");
 
-### Admin Dashboard
+$supplier_id = $_SESSION['user']['id'];
 
-```
-------------------------------------------------
-ADMIN DASHBOARD
-------------------------------------------------
+$result = $conn->query("SELECT * FROM supplier_notifications 
+WHERE supplier_id=$supplier_id");
+?>
 
-Sales Today: £2,350
-Stock Alerts: 6
-Expiring Soon: 12
+<div class="container mt-4">
+<h2>Supplier Dashboard</h2>
 
-------------------------------------------------
-Analytics
-------------------------------------------------
-Sales Growth Graph
-Top Selling Products
+<table class="table">
+<tr>
+<th>Product</th>
+<th>Message</th>
+</tr>
 
-------------------------------------------------
-Stock Monitoring
-------------------------------------------------
-Product        Stock      Status
-Milk            5         Low
-Rice           30         OK
-Yogurt          2         Expiring Soon
-```
+<?php while($row = $result->fetch_assoc()){ 
+$product = $conn->query("SELECT name FROM products WHERE id=".$row['product_id'])->fetch_assoc();
+?>
 
----
+<tr>
+<td><?php echo $product['name']; ?></td>
+<td><?php echo $row['message']; ?></td>
+</tr>
 
-### Accessibility Features
+<?php } ?>
 
-Interface includes:
+</table>
 
-- text size adjustment
-- colour contrast mode
-- screen reader compatibility
-- keyboard navigation
-- mobile responsive layout
+</div>
 
----
 
-# 2. Algorithm Designs (Logic)
 
-These explain **how important processes work**.
 
----
 
-## Algorithm 1 — Customer Login
+<--notif table-->
+CREATE TABLE supplier_notifications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    supplier_id INT,
+    product_id INT,
+    message TEXT
+);
 
-Step-by-step logic:
 
-```
-START
+<checout>
+<?php 
+include("includes/header.php"); 
+include("includes/db.php");
 
-User enters email and password
+$user_id = $_SESSION['user']['id'];
+$user = $conn->query("SELECT loyaltyPoints FROM users WHERE id=$user_id")->fetch_assoc();
+?>
 
-System checks Customer Database
+<div class="container mt-4">
+<h2>Checkout</h2>
 
-IF email does not exist
-    Display "Account not found"
-ELSE
-    IF password incorrect
-        Display "Incorrect password"
-    ELSE
-        Login successful
-        Open customer dashboard
-END
-```
+<form action="process_order.php" method="POST">
 
----
+<input type="text" name="address" placeholder="Address" class="form-control mb-3" required>
 
-## Algorithm 2 — Create Account
+<input type="text" name="card" placeholder="Card Number" class="form-control mb-3" required>
 
-```
-START
+<h4>Loyalty Rewards</h4>
 
-User enters name, email, password
+<select name="discount" class="form-control mb-3">
+    <option value="0">No Discount</option>
+    
+    <?php if($user['loyaltyPoints'] >= 100){ ?>
+        <option value="10">10% Off (100 pts)</option>
+    <?php } ?>
+    
+    <?php if($user['loyaltyPoints'] >= 200){ ?>
+        <option value="20">20% Off (200 pts)</option>
+    <?php } ?>
+</select>
 
-Check if email already exists
+<button class="btn btn-success">Place Order</button>
 
-IF email exists
-    Display error message
-ELSE
-    Validate password strength
+</form>
+</div>
 
-    IF password weak
-        Request stronger password
-    ELSE
-        Save user details to database
-        Account created
-END
-```
 
----
 
-## Algorithm 3 — Product Purchase
+<-process order->
+$discount = $_POST['discount']; // 0, 10, 20
 
-```
-START
+$total = 0;
 
-Customer selects product
-Add product to cart
+// Calculate total
+foreach($_SESSION['cart'] as $pid => $qty){
 
-Customer proceeds to checkout
+    $res = $conn->query("SELECT * FROM products WHERE id=$pid");
+    $product = $res->fetch_assoc();
 
-Check product stock
+    $total += $product['price'] * $qty;
+}
 
-IF stock = 0
-    Display "Out of stock"
-ELSE
-    Calculate total price
-    Apply loyalty discount
+// APPLY DISCOUNT
+if($discount > 0){
+    $total = $total - ($total * ($discount / 100));
+}
 
-    Process payment
 
-    IF payment fails
-        Display payment error
-    ELSE
-        Update stock quantity
-        Add loyalty points
-        Save order record
-END
-```
 
----
+if($discount == 10){
+    $conn->query("UPDATE users SET loyaltyPoints = loyaltyPoints - 100 WHERE id=$user_id");
+}
 
-## Algorithm 4 — Automatic Restocking
+if($discount == 20){
+    $conn->query("UPDATE users SET loyaltyPoints = loyaltyPoints - 200 WHERE id=$user_id");
+}
 
-```
-START
 
-System checks stock levels
 
-IF stock below threshold
-    Generate restock request
+$earned = floor($total / 10);
 
-Send request to supplier
+$conn->query("UPDATE users 
+SET loyaltyPoints = loyaltyPoints + $earned 
+WHERE id=$user_id");
 
-Supplier confirms shipment
 
-Staff track delivery location
 
-When stock arrives
-    Update inventory
-END
-```
+<--shop-->
+<?php 
+session_start();
+include("includes/header.php");
+include("includes/db.php");
 
----
+$result = $conn->query("SELECT * FROM products");
+?>
 
-## Flowchart 1 — Customer Login
+<div class="container mt-4">
+<h2 class="mb-4">Our Farm Products</h2>
 
-```
-START
-↓
-User enters email and password
-↓
-System searches customer database
-↓
-Email found?
+<div class="row">
 
-NO → Display "Account not found"
-      Return to login
+<?php 
+if($result->num_rows > 0){
 
-YES
-↓
-Check password
+while($row = $result->fetch_assoc()){ 
+?>
 
-Password correct?
+<div class="col-md-3 mb-4">
+<div class="card h-100 shadow-sm">
 
-NO → Display "Incorrect password"
+<img src="assets/images/<?php echo $row['image']; ?>" class="card-img-top" style="height:200px; object-fit:cover;">
 
-YES → Login successful
-      Open customer dashboard
-↓
-END
-```
+<div class="card-body d-flex flex-column">
 
----
+<h5><?php echo htmlspecialchars($row['name']); ?></h5>
 
-## Flowchart 2 — Customer Registration
+<p class="fw-bold">£<?php echo $row['price']; ?></p>
 
-```
-START
-↓
-Customer enters:
+<?php if($row['stock'] > 0){ ?>
 
-Name
-Email
-Password
-Phone
-↓
-System validates data
-↓
-Email already exists?
+<p class="text-success">In Stock (<?php echo $row['stock']; ?>)</p>
 
-YES → Show "Account already exists"
+<form action="cart.php" method="POST" class="mt-auto">
 
-NO
-↓
-Password valid?
+<input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
 
-NO → Request stronger password
+<input 
+    type="number" 
+    name="quantity" 
+    value="1" 
+    min="1" 
+    max="100"
+    class="form-control mb-2"
+>
 
-YES
-↓
-Store account in database
-↓
-Display "Account created successfully"
-↓
-END
-```
+<button class="btn btn-primary w-100">Add to Cart</button>
 
----
+</form>
 
-## Flowchart 3 — Purchase Product
+<?php } else { ?>
 
-```
-START
-↓
-Customer selects product
-↓
-Add item to cart
-↓
-Customer selects checkout
-↓
-Check stock availability
+<p class="text-danger">Not in stock</p>
+<button class="btn btn-secondary w-100" disabled>Unavailable</button>
 
-Stock available?
+<?php } ?>
 
-NO → Display "Out of stock"
+</div>
+</div>
+</div>
 
-YES
-↓
-Calculate total price
-↓
-Apply loyalty rewards
-↓
-Process payment
+<?php 
+}
 
-Payment successful?
+} else {
+    echo "<h4>No products available</h4>";
+}
+?>
 
-NO → Payment failed
+</div>
+</div>
 
-YES
-↓
-Update product stock
-↓
-Store order in database
-↓
-Display confirmation
-↓
-END
-```
+<?php include("includes/footer.php"); ?>
 
----
 
-## Flowchart 4 — Admin Dashboard Access
 
-```
-START
-↓
-Admin enters credentials
-↓
-System checks admin database
-↓
-Credentials valid?
 
-NO → Access denied
+<receipt>
+<?php
+session_start();
+include("includes/header.php");
+include("includes/db.php");
 
-YES
-↓
-Load dashboard data
+$order_id = $_GET['order_id'];
 
-Sales analytics
-Stock levels
-Expiry alerts
-Supplier status
-↓
-Display dashboard
-↓
-END
-```
+// Get order
+$order = $conn->query("SELECT * FROM orders WHERE id=$order_id")->fetch_assoc();
 
----
+// Get items
+$items = $conn->query("SELECT * FROM order_items WHERE order_id=$order_id");
 
-## Flowchart 5 — Supplier Restocking
+$subtotal = 0;
+?>
 
-```
-START
-↓
-System monitors stock
-↓
-Stock below threshold?
+<div class="container mt-4">
 
-NO → Continue monitoring
+<div class="card shadow p-4">
 
-YES
-↓
-Generate restock request
-↓
-Send request to supplier
-↓
-Supplier confirms shipment
-↓
-Staff track delivery location
-↓
-Stock received
-↓
-Update inventory
-↓
-END
-```
+<h2 class="text-center mb-4">Receipt</h2>
 
----
+<p><strong>Order ID:</strong> <?php echo $order_id; ?></p>
+<p><strong>Date:</strong> <?php echo $order['created_at']; ?></p>
+<p><strong>Delivery Address:</strong> <?php echo htmlspecialchars($order['address']); ?></p>
 
-# 2. Data Flow Diagrams (DFD)
+<hr>
 
-Each DFD shows:
+<h4>Items Purchased</h4>
 
-- **External entities**
-- **Process**
-- **Data store**
-- **Data flow arrows with labels**
+<table class="table table-bordered">
+<tr>
+<th>Product</th>
+<th>Quantity</th>
+<th>Price</th>
+<th>Total</th>
+</tr>
 
----
+<?php 
+while($item = $items->fetch_assoc()){ 
 
-## DFD 1 — Customer Login
+$product = $conn->query("SELECT name FROM products WHERE id=".$item['product_id'])->fetch_assoc();
 
-External Entity
+$item_total = $item['price'] * $item['quantity'];
+$subtotal += $item_total;
+?>
 
-Customer
+<tr>
+<td><?php echo $product['name']; ?></td>
+<td><?php echo $item['quantity']; ?></td>
+<td>£<?php echo $item['price']; ?></td>
+<td>£<?php echo $item_total; ?></td>
+</tr>
 
-Process
+<?php } ?>
 
-Login Authentication System
+</table>
 
-Data Store
+<hr>
 
-Customer Database
+<?php
+$discount = $order['discount'];
+$discount_amount = $subtotal * ($discount / 100);
+$final_total = $subtotal - $discount_amount;
+?>
 
-Data flows:
+<p><strong>Subtotal:</strong> £<?php echo number_format($subtotal,2); ?></p>
 
-```
-Customer
-   │
-   │ enters email & password
-   ↓
-Login System
-   │
-   │ verify credentials
-   ↓
-Customer Database
-   │
-   │ return account details
-   ↓
-Login System
-   │
-   │ authentication result
-   ↓
-Customer
-```
+<p><strong>Discount:</strong> <?php echo $discount; ?>% (-£<?php echo number_format($discount_amount,2); ?>)</p>
 
-Arrow descriptions:
+<h4><strong>Final Total: £<?php echo number_format($final_total,2); ?></strong></h4>
 
-- Enter login credentials
-- Verify user account
-- Retrieve user data
-- Return authentication result
+<hr>
 
----
+<p class="text-center">Thank you for shopping with us 🌱</p>
 
-## DFD 2 — Product Purchase
+</div>
 
-External Entity
+</div>
 
-Customer
+<?php include("includes/footer.php"); ?>
 
-Process
 
-Order Processing System
 
-Data Stores
+<--sql-->
+ALTER TABLE orders 
+ADD discount INT DEFAULT 0;
 
-- Product Database
-- Orders Database
 
-```
-Customer
-   │
-   │ select product
-   ↓
-Order Processing System
-   │
-   │ check stock level
-   ↓
-Product Database
-   │
-   │ return product availability
-   ↓
-Order Processing System
-   │
-   │ save order record
-   ↓
-Orders Database
-   │
-   │ confirmation details
-   ↓
-Customer
-```
 
-Arrow descriptions:
+<--login sql-->
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    role VARCHAR(20) DEFAULT 'customer',
+    loyaltyPoints INT DEFAULT 0
+);
 
-- Product selection request
-- Stock verification
-- Product availability response
-- Order storage
-- Purchase confirmation
 
----
 
-## DFD 3 — Supplier Restocking
+<--register-->
+<?php
+include("../includes/db.php");
 
-External Entities
+$message = "";
 
-- Supplier
-- Staff
+if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-Process
+$name = $_POST['name'];
+$email = $_POST['email'];
+$password = $_POST['password'];
 
-Stock Management System
+// CHECK IF USER EXISTS
+$stmt = $conn->prepare("SELECT id FROM users WHERE email=?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
 
-Data Stores
+if($result->num_rows > 0){
 
-- Inventory Database
-- Supplier Database
+    $message = "Account already exists. Please login.";
 
-```
-Inventory Database
-   │
-   │ stock level data
-   ↓
-Stock Management System
-   │
-   │ restock request
-   ↓
-Supplier
-   │
-   │ shipment update
-   ↓
-Stock Management System
-   │
-   │ delivery status
-   ↓
-Staff
-```
+} else {
 
-Arrow descriptions:
+    // HASH PASSWORD
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-- Monitor stock levels
-- Generate restock request
-- Delivery tracking update
-- Display supplier status
+    $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $name, $email, $hashedPassword);
 
----
+    if($stmt->execute()){
+        $message = "Account created successfully. You can now login.";
+    } else {
+        $message = "Error creating account.";
+    }
+}
+}
+?>
 
-# 3. Hierarchy Diagrams
+<?php include("../includes/header.php"); ?>
 
-Hierarchy diagrams show **system decomposition**.
+<div class="container mt-4">
+<h2>Register</h2>
 
-Each hierarchy splits into **GUI vs Backend**.
+<p class="text-danger"><?php echo $message; ?></p>
 
----
+<form method="POST">
 
-## Hierarchy 1 — Customer System
+<input type="text" name="name" placeholder="Full Name" class="form-control mb-3" required>
 
-```
-Customer System
-│
-├── GUI
-│     ├ Register Account Page
-│     ├ Login Page
-│     ├ Product Catalogue
-│     ├ Shopping Cart
-│     └ Checkout Page
-│
-└── Backend
-      ├ Account Authentication
-      ├ Product Retrieval
-      ├ Order Processing
-      ├ Loyalty Points Calculation
-      └ Database Storage
-```
+<input type="email" name="email" placeholder="Email" class="form-control mb-3" required>
 
----
+<input type="password" name="password" placeholder="Password (min 8 chars)" class="form-control mb-3" required>
 
-## Hierarchy 2 — Admin System
+<button class="btn btn-primary">Register</button>
 
-```
-Admin Dashboard
-│
-├── GUI
-│     ├ Sales Analytics Dashboard
-│     ├ Stock Monitoring Page
-│     ├ Product Management Page
-│     └ Supplier Monitoring Page
-│
-└── Backend
-      ├ Sales Data Analysis
-      ├ Inventory Monitoring
-      ├ Expiry Detection
-      └ Supplier Data Processing
-```
+</form>
 
----
+<p class="mt-3">
+Already have an account? <a href="login.php">Login here</a>
+</p>
 
-## Hierarchy 3 — Supplier System
+</div>
 
-```
-Supplier Management
-│
-├── GUI
-│     ├ Restock Request Page
-│     ├ Delivery Status Page
-│     └ Shipment Confirmation Page
-│
-└── Backend
-      ├ Stock Threshold Monitoring
-      ├ Supplier Communication System
-      └ Delivery Tracking System
-```
+<?php include("../includes/footer.php"); ?>
 
----
 
-# Data Requirements
 
-This table shows:
 
-- **data input**
-- **data type**
-- **validation rules**
 
-| Data Item | Description | Data Type | Validation |
-| --- | --- | --- | --- |
-| Customer Name | name of customer | String | must contain letters only |
-| Email Address | login email | String | must contain "@" and valid domain |
-| Password | user password | String | minimum 8 characters |
-| Phone Number | contact number | Integer/String | must contain 10–11 digits |
-| Product Name | item name | String | cannot be empty |
-| Product Price | item price | Decimal | must be greater than 0 |
-| Stock Quantity | number of items | Integer | must be positive |
-| Expiry Date | product expiry | Date | must be future date |
-| Order Total | total purchase cost | Decimal | automatically calculated |
 
----
+<-login->
+<?php
+session_start();
+include("../includes/db.php");
 
-# Test Strategy
+$message = "";
 
-Testing ensures the system works correctly and securely.
+if($_SERVER["REQUEST_METHOD"] == "POST"){
 
----
+$email = $_POST['email'];
+$password = $_POST['password'];
 
-## Unit Testing
+// CHECK USER
+$stmt = $conn->prepare("SELECT * FROM users WHERE email=?");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
 
-Individual components tested separately.
+if($result->num_rows > 0){
 
-| Test Case | Input | Expected Result |
-| --- | --- | --- |
-| Login valid user | correct email/password | login successful |
-| Login wrong password | incorrect password | error message |
-| Add product to cart | valid product | item added to cart |
+    $user = $result->fetch_assoc();
 
----
+    // VERIFY PASSWORD
+    if(password_verify($password, $user['password'])){
 
-## Validation Testing
+        $_SESSION['user'] = $user;
 
-Checks invalid input.
+        // REDIRECT BASED ON ROLE
+        if($user['role'] == "admin"){
+            header("Location: ../admin/dashboard.php");
+        } elseif($user['role'] == "supplier"){
+            header("Location: ../supplier/supplier.php");
+        } else {
+            header("Location: ../index.php");
+        }
+        exit();
 
-| Test | Input | Expected Outcome |
-| --- | --- | --- |
-| Invalid email | usergmail.com | error message |
-| Weak password | 1234 | rejected |
-| Negative stock | -10 | validation error |
+    } else {
+        $message = "Incorrect password.";
+    }
 
----
+} else {
+    $message = "No account found. Please register.";
+}
+}
+?>
 
-## Security Testing
+<?php include("../includes/header.php"); ?>
 
-Tests protection against attacks.
+<div class="container mt-4">
+<h2>Login</h2>
 
-Examples:
+<p class="text-danger"><?php echo $message; ?></p>
 
-- SQL injection attempts
-- multiple failed login attempts
-- unauthorized admin access
+<form method="POST">
 
-Expected result:
+<input type="email" name="email" placeholder="Email" class="form-control mb-3" required>
 
-Unauthorized access blocked.
+<input type="password" name="password" placeholder="Password" class="form-control mb-3" required>
 
----
+<button class="btn btn-success">Login</button>
 
-## Performance Testing
+</form>
 
-Simulates heavy usage.
+<p class="mt-3">
+Don't have an account? <a href="register.php">Register here</a>
+</p>
 
-Example:
+</div>
 
-500 customers purchasing at the same time.
+<?php include("../includes/footer.php"); ?>
 
-Expected result:
 
-System continues functioning without crashes.
 
----
+<-logout->
+<?php
+session_start();
+session_destroy();
 
-## User Acceptance Testing (UAT)
+header("Location: ../index.php");
+?>
 
-Real users test the system.
 
-Participants:
 
-- staff
-- customers
-- admin users
+<-header update->
+<?php if(isset($_SESSION['user'])){ ?>
 
-Goal:
+<li class="nav-item">
+<a class="nav-link">Hello, <?php echo $_SESSION['user']['name']; ?></a>
+</li>
 
-Ensure system meets **business requirements**.
+<li class="nav-item">
+<a href="auth/logout.php" class="nav-link">Logout</a>
+</li>
 
----
+<?php } else { ?>
 
-## Prerequisites and Dependencies
+<li class="nav-item">
+<a href="auth/login.php" class="nav-link">Login</a>
+</li>
 
-Examples:
+<?php } ?>
 
-Prerequisite:
 
-- The database must be connected
-- user account must exist before login
+-------
+------
+------
 
-Dependencies:
+assets/css/style.css
+body {
+    background-color: #f8f9fa;
+}
 
-- payment gateway for checkout
-- supplier tracking system for delivery updates
+.card {
+    border-radius: 10px;
+}
 
-# 5. Design Documentation
+.navbar-brand {
+    font-weight: bold;
+}
 
-This explains **how all designs link together**.
+.btn {
+    border-radius: 8px;
+}
 
-The design documentation ensures developers understand how the system should be implemented.
+h2 {
+    font-weight: 600;
+}
 
-The system is structured using:
+.badge {
+    font-size: 0.8rem;
+}
+1. SHOP PAGE (Products + Availability)
+<div class="container mt-4">
+<h2>Farm Products</h2>
 
-- **GUI designs** for user interaction
-- **algorithms** defining logic processes
-- **data structures** showing database requirements
-- **test strategy** ensuring reliability
+<div class="row">
+
+<!-- Product Card -->
+<div class="col-md-3 mb-4">
+<div class="card h-100">
+
+<img src="assets/images/apple.jpg" class="card-img-top">
+
+<div class="card-body d-flex flex-column">
+
+<h5>Fresh Apples</h5>
+<p>£2.50</p>
+
+<p class="text-success">In Stock</p>
+
+<input type="number" value="1" min="1" max="100" class="form-control mb-2">
+
+<button class="btn btn-primary mt-auto">Add to Cart</button>
+
+</div>
+</div>
+</div>
+
+</div>
+</div>
+ 2. DISCOUNT / REWARDS PAGE
+<div class="container mt-4">
+<h2>Loyalty Rewards</h2>
+
+<div class="row">
+
+<div class="col-md-4">
+<div class="card text-center p-3">
+<h4>10% Off</h4>
+<p>Cost: 100 Points</p>
+<button class="btn btn-success">Redeem</button>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card text-center p-3">
+<h4>20% Off</h4>
+<p>Cost: 200 Points</p>
+<button class="btn btn-success">Redeem</button>
+</div>
+</div>
+
+</div>
+</div>
+3. CART PAGE
+<div class="container mt-4">
+<h2>Your Cart</h2>
+
+<table class="table table-bordered">
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Quantity</th>
+<th>Total</th>
+<th>Action</th>
+</tr>
+
+<tr>
+<td>Apples</td>
+<td>£2.50</td>
+<td>2</td>
+<td>£5.00</td>
+<td><button class="btn btn-danger">Remove</button></td>
+</tr>
+
+</table>
+
+<h4>Total: £5.00</h4>
+
+<a href="checkout.php" class="btn btn-success">Proceed to Checkout</a>
+</div>
+ 4. CHECKOUT PAGE
+<div class="container mt-4">
+<h2>Checkout</h2>
+
+<form>
+
+<h5>Delivery Address</h5>
+<input type="text" class="form-control mb-3" placeholder="Enter address">
+
+<h5>Payment</h5>
+<input type="text" class="form-control mb-3" placeholder="Card Number">
+
+<h5>Loyalty Rewards</h5>
+<select class="form-control mb-3">
+<option>No Discount</option>
+<option>10% Off</option>
+<option>20% Off</option>
+</select>
+
+<button class="btn btn-primary">Place Order</button>
+
+</form>
+</div>
+ 5. LOGIN PAGE
+<div class="container mt-4" style="max-width:500px;">
+<h2>Login</h2>
+
+<form>
+
+<input type="email" class="form-control mb-3" placeholder="Email">
+
+<input type="password" class="form-control mb-3" placeholder="Password">
+
+<button class="btn btn-success w-100">Login</button>
+
+</form>
+
+<p class="mt-3">
+Don't have an account? <a href="register.php">Register</a>
+</p>
+
+</div>
+ 6. REGISTER PAGE
+<div class="container mt-4" style="max-width:500px;">
+<h2>Register</h2>
+
+<form>
+
+<input type="text" class="form-control mb-3" placeholder="Full Name">
+
+<input type="email" class="form-control mb-3" placeholder="Email">
+
+<input type="password" class="form-control mb-3" placeholder="Password">
+
+<button class="btn btn-primary w-100">Register</button>
+
+</form>
+
+</div>
+ 7. ADMIN DASHBOARD PAGE
+<div class="container mt-4">
+<h2>Admin Dashboard</h2>
+
+<div class="row">
+
+<div class="col-md-3">
+<div class="card text-center p-3">
+<h4>Sales</h4>
+<p>£2,500</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card text-center p-3">
+<h4>Stock Low</h4>
+<p>5 Items</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card text-center p-3">
+<h4>Orders</h4>
+<p>120</p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card text-center p-3">
+<h4>Users</h4>
+<p>300</p>
+</div>
+</div>
+
+</div>
+
+<h4 class="mt-4">Stock Table</h4>
+
+<table class="table">
+<tr>
+<th>Product</th>
+<th>Stock</th>
+<th>Status</th>
+</tr>
+
+<tr>
+<td>Milk</td>
+<td>3</td>
+<td class="text-danger">Low</td>
+</tr>
+
+</table>
+
+</div>
+8. RECEIPT PAGE (UI ONLY)
+<div class="container mt-4">
+<div class="card p-4">
+
+<h2 class="text-center">Receipt</h2>
+
+<p><strong>Order ID:</strong> 101</p>
+<p><strong>Date:</strong> Today</p>
+
+<table class="table">
+<tr>
+<th>Product</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Total</th>
+</tr>
+
+<tr>
+<td>Apples</td>
+<td>2</td>
+<td>£2.50</td>
+<td>£5.00</td>
+</tr>
+
+</table>
+
+<p><strong>Subtotal:</strong> £5.00</p>
+<p><strong>Discount:</strong> 10%</p>
+<h4><strong>Total: £4.50</strong></h4>
+
+</div>
+</div>
+
+
+
+----------
+
+function calculateTotal(){
+
+    let subtotal = parseFloat(document.getElementById("subtotal").innerText);
+    let discount = document.getElementById("discount").value;
+
+    let final = subtotal;
+
+    if(discount == "10"){
+        final = subtotal * 0.9;
+    }
+
+    if(discount == "20"){
+        final = subtotal * 0.8;
+    }
+
+    document.getElementById("finalTotal").innerText = final.toFixed(2);
+}
+
+
+
+-----high contrast-----
+
+function highContrast(){
+    document.body.style.background = "black";
+    document.body.style.color = "yellow";
+}
+
+
+
+
+
+---------
+function increaseText(){
+    document.body.style.fontSize = "20px";
+}
+
+
+---------
+document.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+        alert("You pressed Enter");
+    }
+});
+
+
+---------
+
+<button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
+<span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="navMenu">
+
+
+-------
+fetch("search.php?q=" + query)
+
+-------
+SELECT * FROM products WHERE name LIKE '%search%'
