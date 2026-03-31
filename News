@@ -1,140 +1,68 @@
-CREATE DATABASE retail_system;
-
-USE retail_system;
-
--- Users
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100) UNIQUE,
-    password VARCHAR(255),
-    role VARCHAR(20) DEFAULT 'customer'
-);
-
--- Products
+<--product table-->
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
     price DECIMAL(10,2),
-    stock INT,
-    image VARCHAR(255)
-);
-
--- Orders
-CREATE TABLE orders (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    total DECIMAL(10,2),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Cart
-CREATE TABLE cart (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    product_id INT,
-    quantity INT
-);
-
--- Contact messages
-CREATE TABLE enquiries (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100),
-    message TEXT
+    image VARCHAR(100),
+    stock INT
 );
 
 
 
-<---db.php--->
+
+<--insert to table-->
+INSERT INTO products (name, price, image, stock) VALUES
+('Apples', 2.50, 'apple.jpg', 20),
+('Milk', 1.80, 'milk.jpg', 15),
+('Eggs', 3.20, 'eggs.jpg', 10);
+
+
+
+
+
+
+<--shop-->
 <?php
-$conn = new mysqli("localhost", "root", "", "retail_system");
+session_start();
+include("includes/db.php");
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+$result = $conn->query("SELECT * FROM products");
 ?>
 
-
-<----index--->
-<?php include("includes/header.php"); ?>
-
 <div class="container mt-4">
-<h1>Welcome to Our Store</h1>
-<p>Browse products and enjoy rewards!</p>
-</div>
+<div class="row">
 
-<?php include("includes/footer.php"); ?>
+<?php while($row = $result->fetch_assoc()){ ?>
 
-<---header--->
-<?php session_start(); ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Retail System</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+<div class="col-md-3">
+<div class="card">
 
-<body>
+<img src="assets/images/<?php echo $row['image']; ?>" class="card-img-top">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-<div class="container">
+<div class="card-body">
+<h5><?php echo $row['name']; ?></h5>
+<p>£<?php echo $row['price']; ?></p>
 
-<a class="navbar-brand" href="index.php">Store</a>
+<form action="cart.php" method="POST">
 
-<form class="d-flex" action="shop.php" method="GET">
-    <input class="form-control me-2" type="search" name="search" placeholder="Search">
+<input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
+
+<input type="number" name="quantity" value="1" min="1" max="100" class="form-control mb-2">
+
+<button class="btn btn-primary w-100">Add to Cart</button>
+
 </form>
 
-<ul class="navbar-nav ms-auto">
-
-<li class="nav-item">
-<a href="cart.php" class="nav-link">
-🛒 Cart <span class="badge bg-danger">
-<?php echo isset($_SESSION['cart_count']) ? $_SESSION['cart_count'] : 0; ?>
-</span>
-</a>
-</li>
-
-<li class="nav-item"><a href="auth/login.php" class="nav-link">👤</a></li>
-
-<li class="nav-item dropdown">
-<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Accessibility</a>
-<ul class="dropdown-menu">
-<li><a class="dropdown-item" href="#">High Contrast</a></li>
-<li><a class="dropdown-item" href="#">Keyboard Nav</a></li>
-<li><a class="dropdown-item" href="#">Screen Reader</a></li>
-<li><a class="dropdown-item" href="#">Magnify</a></li>
-<li><a class="dropdown-item" href="accessibility.php">Help</a></li>
-</ul>
-</li>
-
-</ul>
 </div>
-</nav>
-
-<--footer-->
-<footer class="bg-dark text-white text-center p-3 mt-5">
-    <p>© 2026 Retail System</p>
-</footer>
-
-<script src="assets/js/script.js"></script>
-</body>
-</html>
-
-
-
-
-<--index.php-->
-<?php include("includes/header.php"); ?>
-
-<div class="container mt-4">
-<h1>Welcome to Our Store</h1>
-<p>Browse products and enjoy rewards!</p>
+</div>
 </div>
 
-<?php include("includes/footer.php"); ?>
+<?php } ?>
+
+</div>
+</div>
+
+
 
 
 
@@ -142,11 +70,11 @@ if ($conn->connect_error) {
 <--cart-->
 <?php
 session_start();
-include("includes/header.php");
 include("includes/db.php");
 
 // ADD TO CART
 if(isset($_POST['product_id'])){
+
     $pid = $_POST['product_id'];
     $qty = $_POST['quantity'];
 
@@ -155,14 +83,11 @@ if(isset($_POST['product_id'])){
     } else {
         $_SESSION['cart'][$pid] = $qty;
     }
-
-    $_SESSION['cart_count'] = array_sum($_SESSION['cart']);
 }
 
 // REMOVE ITEM
 if(isset($_GET['remove'])){
     unset($_SESSION['cart'][$_GET['remove']]);
-    $_SESSION['cart_count'] = array_sum($_SESSION['cart']);
 }
 ?>
 
@@ -172,8 +97,8 @@ if(isset($_GET['remove'])){
 <table class="table">
 <tr>
 <th>Product</th>
-<th>Price</th>
 <th>Qty</th>
+<th>Price</th>
 <th>Total</th>
 <th>Action</th>
 </tr>
@@ -185,8 +110,8 @@ if(!empty($_SESSION['cart'])){
 
 foreach($_SESSION['cart'] as $pid => $qty){
 
-    $result = $conn->query("SELECT * FROM products WHERE id=$pid");
-    $product = $result->fetch_assoc();
+    $res = $conn->query("SELECT * FROM products WHERE id=$pid");
+    $product = $res->fetch_assoc();
 
     $sub = $product['price'] * $qty;
     $total += $sub;
@@ -194,557 +119,72 @@ foreach($_SESSION['cart'] as $pid => $qty){
 
 <tr>
 <td><?php echo $product['name']; ?></td>
-<td>£<?php echo $product['price']; ?></td>
 <td><?php echo $qty; ?></td>
+<td>£<?php echo $product['price']; ?></td>
 <td>£<?php echo $sub; ?></td>
-<td><a href="cart.php?remove=<?php echo $pid; ?>" class="btn btn-danger">Remove</a></td>
+<td><a href="?remove=<?php echo $pid; ?>" class="btn btn-danger">Remove</a></td>
 </tr>
 
 <?php } } ?>
 
 </table>
 
-<h3>Total: £<?php echo $total; ?></h3>
+<h4>Total: £<?php echo $total; ?></h4>
 
 <a href="checkout.php" class="btn btn-success">Checkout</a>
 
 </div>
 
-<?php include("includes/footer.php"); ?>
 
 
 
 
-----cart---
-<?php 
-include("includes/header.php");
-include("includes/db.php");
-
-$result = $conn->query("SELECT * FROM products");
-?>
-
-<div class="container mt-4">
-<div class="row">
-
-<?php while($row = $result->fetch_assoc()) { ?>
-<div class="col-md-3">
-<div class="card">
-
-<img src="assets/images/<?php echo $row['image']; ?>" class="card-img-top">
-
-<div class="card-body">
-<h5><?php echo $row['name']; ?></h5>
-<p>£<?php echo $row['price']; ?></p>
-
-<form action="cart.php" method="POST">
-<input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
-<input type="number" name="quantity" value="1" min="1">
-<button class="btn btn-primary">Add to Cart</button>
-</form>
-
-</div>
-</div>
-</div>
-<?php } ?>
-
-</div>
-</div>
-
-<?php include("includes/footer.php"); ?>
 
 
-<--checkout-->
-<?php include("includes/header.php"); ?>
-
-<div class="container mt-4">
-<h2>Checkout</h2>
-
-<form action="process_order.php" method="POST">
-
-<input type="text" name="address" placeholder="Delivery Address" class="form-control mb-3" required>
-
-<input type="text" name="card" placeholder="Card Number" class="form-control mb-3" required>
-
-<button class="btn btn-primary">Place Order</button>
-
-</form>
-
-</div>
-
-<?php include("includes/footer.php"); ?>
-
-
-
-
----login----
-
+<--cart count-->
 <?php
-include("../includes/db.php");
-
-if($_SERVER["REQUEST_METHOD"] == "POST") {
-
-$email = $_POST['email'];
-$password = $_POST['password'];
-
-$sql = "SELECT * FROM users WHERE email='$email'";
-$result = $conn->query($sql);
-
-if($result->num_rows > 0){
-    $user = $result->fetch_assoc();
-
-    if(password_verify($password, $user['password'])){
-        session_start();
-        $_SESSION['user'] = $user;
-
-        if($user['role'] == "admin"){
-            header("Location: ../admin/dashboard.php");
-        } else {
-            header("Location: ../index.php");
-        }
-    }
-}
+$count = 0;
+if(isset($_SESSION['cart'])){
+    $count = array_sum($_SESSION['cart']);
 }
 ?>
 
+<a href="cart.php" class="nav-link">
+Cart🛒 <span class="badge bg-danger"><?php echo $count; ?></span>
+</a>
 
 
 
 
-----admin----
-<?php include("../includes/header.php"); include("../includes/db.php"); ?>
 
-<div class="container mt-4">
-<h2>Admin Dashboard</h2>
 
-<?php
-$totalProducts = $conn->query("SELECT COUNT(*) as total FROM products")->fetch_assoc();
-?>
-
-<p>Total Products: <?php echo $totalProducts['total']; ?></p>
-
-</div>
-
-<?php include("../includes/footer.php"); ?>
-
-
-
-
-
-
----------
-
-
-
-
-<--process-->
-<?php
-session_start();
-include("includes/db.php");
-
-$user_id = $_SESSION['user']['id'];
-$address = $_POST['address'];
-
-$total = 0;
-
-// CALCULATE TOTAL
-foreach($_SESSION['cart'] as $pid => $qty){
-    $res = $conn->query("SELECT * FROM products WHERE id=$pid");
-    $product = $res->fetch_assoc();
-
-    $total += $product['price'] * $qty;
-}
-
-// CREATE ORDER
-$conn->query("INSERT INTO orders (user_id, total, address)
-VALUES ($user_id, $total, '$address')");
-
-$order_id = $conn->insert_id;
-
-// LOOP PRODUCTS
-foreach($_SESSION['cart'] as $pid => $qty){
-
-    $res = $conn->query("SELECT * FROM products WHERE id=$pid");
-    $product = $res->fetch_assoc();
-
-    $price = $product['price'];
-
-    // SAVE ORDER ITEM
-    $conn->query("INSERT INTO order_items (order_id, product_id, quantity, price)
-    VALUES ($order_id, $pid, $qty, $price)");
-
-    // UPDATE STOCK
-    $conn->query("UPDATE products SET stock = stock - $qty WHERE id=$pid");
-
-    // 🔥 SUPPLIER NOTIFICATION
-    if($product['stock'] - $qty < 5){
-        $conn->query("INSERT INTO supplier_notifications 
-        (supplier_id, product_id, message)
-        VALUES ({$product['supplier_id']}, $pid, 'Restock needed')");
-    }
-}
-
-// CLEAR CART
-unset($_SESSION['cart']);
-$_SESSION['cart_count'] = 0;
-
-// GO TO RECEIPT
-header("Location: receipt.php?order_id=$order_id");
-
-
-<--recipt-->
-<?php
-include("includes/header.php");
-include("includes/db.php");
-
-$order_id = $_GET['order_id'];
-
-$order = $conn->query("SELECT * FROM orders WHERE id=$order_id")->fetch_assoc();
-$items = $conn->query("SELECT * FROM order_items WHERE order_id=$order_id");
-?>
-
-<div class="container mt-4">
-<h2>Receipt</h2>
-
-<p><strong>Order ID:</strong> <?php echo $order_id; ?></p>
-<p><strong>Total:</strong> £<?php echo $order['total']; ?></p>
-<p><strong>Address:</strong> <?php echo $order['address']; ?></p>
-
-<table class="table">
-<tr>
-<th>Product</th>
-<th>Qty</th>
-<th>Price</th>
-</tr>
-
-<?php while($item = $items->fetch_assoc()){ 
-$product = $conn->query("SELECT name FROM products WHERE id=".$item['product_id'])->fetch_assoc();
-?>
-
-<tr>
-<td><?php echo $product['name']; ?></td>
-<td><?php echo $item['quantity']; ?></td>
-<td>£<?php echo $item['price']; ?></td>
-</tr>
-
-<?php } ?>
-
-</table>
-
-</div>
-
-<?php include("includes/footer.php"); ?>
-
-
-
-<--supplier-->
-<?php
-include("../includes/header.php");
-include("../includes/db.php");
-
-$supplier_id = $_SESSION['user']['id'];
-
-$result = $conn->query("SELECT * FROM supplier_notifications 
-WHERE supplier_id=$supplier_id");
-?>
-
-<div class="container mt-4">
-<h2>Supplier Dashboard</h2>
-
-<table class="table">
-<tr>
-<th>Product</th>
-<th>Message</th>
-</tr>
-
-<?php while($row = $result->fetch_assoc()){ 
-$product = $conn->query("SELECT name FROM products WHERE id=".$row['product_id'])->fetch_assoc();
-?>
-
-<tr>
-<td><?php echo $product['name']; ?></td>
-<td><?php echo $row['message']; ?></td>
-</tr>
-
-<?php } ?>
-
-</table>
-
-</div>
-
-
-
-
-
-<--notif table-->
-CREATE TABLE supplier_notifications (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    supplier_id INT,
-    product_id INT,
-    message TEXT
-);
-
-
-<checout>
-<?php 
-include("includes/header.php"); 
-include("includes/db.php");
-
-$user_id = $_SESSION['user']['id'];
-$user = $conn->query("SELECT loyaltyPoints FROM users WHERE id=$user_id")->fetch_assoc();
-?>
-
-<div class="container mt-4">
-<h2>Checkout</h2>
-
-<form action="process_order.php" method="POST">
-
-<input type="text" name="address" placeholder="Address" class="form-control mb-3" required>
-
-<input type="text" name="card" placeholder="Card Number" class="form-control mb-3" required>
-
-<h4>Loyalty Rewards</h4>
-
-<select name="discount" class="form-control mb-3">
-    <option value="0">No Discount</option>
-    
-    <?php if($user['loyaltyPoints'] >= 100){ ?>
-        <option value="10">10% Off (100 pts)</option>
-    <?php } ?>
-    
-    <?php if($user['loyaltyPoints'] >= 200){ ?>
-        <option value="20">20% Off (200 pts)</option>
-    <?php } ?>
-</select>
-
-<button class="btn btn-success">Place Order</button>
-
-</form>
-</div>
-
-
-
-<-process order->
-$discount = $_POST['discount']; // 0, 10, 20
-
-$total = 0;
-
-// Calculate total
-foreach($_SESSION['cart'] as $pid => $qty){
-
-    $res = $conn->query("SELECT * FROM products WHERE id=$pid");
-    $product = $res->fetch_assoc();
-
-    $total += $product['price'] * $qty;
-}
-
-// APPLY DISCOUNT
-if($discount > 0){
-    $total = $total - ($total * ($discount / 100));
-}
-
-
-
-if($discount == 10){
-    $conn->query("UPDATE users SET loyaltyPoints = loyaltyPoints - 100 WHERE id=$user_id");
-}
-
-if($discount == 20){
-    $conn->query("UPDATE users SET loyaltyPoints = loyaltyPoints - 200 WHERE id=$user_id");
-}
-
-
-
-$earned = floor($total / 10);
-
-$conn->query("UPDATE users 
-SET loyaltyPoints = loyaltyPoints + $earned 
-WHERE id=$user_id");
-
-
-
-<--shop-->
-<?php 
-session_start();
-include("includes/header.php");
-include("includes/db.php");
-
-$result = $conn->query("SELECT * FROM products");
-?>
-
-<div class="container mt-4">
-<h2 class="mb-4">Our Farm Products</h2>
-
-<div class="row">
-
-<?php 
-if($result->num_rows > 0){
-
-while($row = $result->fetch_assoc()){ 
-?>
-
-<div class="col-md-3 mb-4">
-<div class="card h-100 shadow-sm">
-
-<img src="assets/images/<?php echo $row['image']; ?>" class="card-img-top" style="height:200px; object-fit:cover;">
-
-<div class="card-body d-flex flex-column">
-
-<h5><?php echo htmlspecialchars($row['name']); ?></h5>
-
-<p class="fw-bold">£<?php echo $row['price']; ?></p>
-
-<?php if($row['stock'] > 0){ ?>
-
-<p class="text-success">In Stock (<?php echo $row['stock']; ?>)</p>
-
-<form action="cart.php" method="POST" class="mt-auto">
-
-<input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
-
-<input 
-    type="number" 
-    name="quantity" 
-    value="1" 
-    min="1" 
-    max="100"
-    class="form-control mb-2"
->
-
-<button class="btn btn-primary w-100">Add to Cart</button>
-
-</form>
-
-<?php } else { ?>
-
-<p class="text-danger">Not in stock</p>
-<button class="btn btn-secondary w-100" disabled>Unavailable</button>
-
-<?php } ?>
-
-</div>
-</div>
-</div>
-
-<?php 
-}
-
-} else {
-    echo "<h4>No products available</h4>";
-}
-?>
-
-</div>
-</div>
-
-<?php include("includes/footer.php"); ?>
-
-
-
-
-<receipt>
-<?php
-session_start();
-include("includes/header.php");
-include("includes/db.php");
-
-$order_id = $_GET['order_id'];
-
-// Get order
-$order = $conn->query("SELECT * FROM orders WHERE id=$order_id")->fetch_assoc();
-
-// Get items
-$items = $conn->query("SELECT * FROM order_items WHERE order_id=$order_id");
-
-$subtotal = 0;
-?>
-
-<div class="container mt-4">
-
-<div class="card shadow p-4">
-
-<h2 class="text-center mb-4">Receipt</h2>
-
-<p><strong>Order ID:</strong> <?php echo $order_id; ?></p>
-<p><strong>Date:</strong> <?php echo $order['created_at']; ?></p>
-<p><strong>Delivery Address:</strong> <?php echo htmlspecialchars($order['address']); ?></p>
-
-<hr>
-
-<h4>Items Purchased</h4>
-
-<table class="table table-bordered">
-<tr>
-<th>Product</th>
-<th>Quantity</th>
-<th>Price</th>
-<th>Total</th>
-</tr>
-
-<?php 
-while($item = $items->fetch_assoc()){ 
-
-$product = $conn->query("SELECT name FROM products WHERE id=".$item['product_id'])->fetch_assoc();
-
-$item_total = $item['price'] * $item['quantity'];
-$subtotal += $item_total;
-?>
-
-<tr>
-<td><?php echo $product['name']; ?></td>
-<td><?php echo $item['quantity']; ?></td>
-<td>£<?php echo $item['price']; ?></td>
-<td>£<?php echo $item_total; ?></td>
-</tr>
-
-<?php } ?>
-
-</table>
-
-<hr>
-
-<?php
-$discount = $order['discount'];
-$discount_amount = $subtotal * ($discount / 100);
-$final_total = $subtotal - $discount_amount;
-?>
-
-<p><strong>Subtotal:</strong> £<?php echo number_format($subtotal,2); ?></p>
-
-<p><strong>Discount:</strong> <?php echo $discount; ?>% (-£<?php echo number_format($discount_amount,2); ?>)</p>
-
-<h4><strong>Final Total: £<?php echo number_format($final_total,2); ?></strong></h4>
-
-<hr>
-
-<p class="text-center">Thank you for shopping with us 🌱</p>
-
-</div>
-
-</div>
-
-<?php include("includes/footer.php"); ?>
-
-
-
-<--sql-->
-ALTER TABLE orders 
-ADD discount INT DEFAULT 0;
-
-
-
-<--login sql-->
+<--Users table-->
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     password VARCHAR(255),
-    role VARCHAR(20) DEFAULT 'customer',
+    role ENUM('customer','admin','supplier') DEFAULT 'customer',
     loyaltyPoints INT DEFAULT 0
 );
 
 
 
-<--register-->
+
+
+
+<--admin supplier-->
+INSERT INTO users (name, email, password, role) VALUES
+('Admin User', 'admin@test.com', '$2y$10$examplehash', 'admin'),
+('Supplier User', 'supplier@test.com', '$2y$10$examplehash', 'supplier');
+
+
+
+
+
+
+
+<--register page-->
 <?php
 include("../includes/db.php");
 
@@ -755,67 +195,106 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 $name = $_POST['name'];
 $email = $_POST['email'];
 $password = $_POST['password'];
+$confirm = $_POST['confirm_password'];
 
-// CHECK IF USER EXISTS
-$stmt = $conn->prepare("SELECT id FROM users WHERE email=?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if($result->num_rows > 0){
-
-    $message = "Account already exists. Please login.";
-
+// CHECK PASSWORD MATCH
+if($password !== $confirm){
+    $message = "Passwords do not match!";
 } else {
 
-    // HASH PASSWORD
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    // CHECK IF EMAIL EXISTS
+    $stmt = $conn->prepare("SELECT id FROM users WHERE email=?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $name, $email, $hashedPassword);
-
-    if($stmt->execute()){
-        $message = "Account created successfully. You can now login.";
+    if($result->num_rows > 0){
+        $message = "You already have an account. Please login.";
     } else {
-        $message = "Error creating account.";
+
+        // HASH PASSWORD
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+
+        $stmt = $conn->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $name, $email, $hashed);
+        $stmt->execute();
+
+        $message = "Account created successfully!";
     }
 }
 }
 ?>
 
-<?php include("../includes/header.php"); ?>
-
 <div class="container mt-4">
 <h2>Register</h2>
 
-<p class="text-danger"><?php echo $message; ?></p>
+<p><?php echo $message; ?></p>
 
 <form method="POST">
 
-<input type="text" name="name" placeholder="Full Name" class="form-control mb-3" required>
-
-<input type="email" name="email" placeholder="Email" class="form-control mb-3" required>
-
-<input type="password" name="password" placeholder="Password (min 8 chars)" class="form-control mb-3" required>
+<input type="text" name="name" placeholder="Name" class="form-control mb-2" required>
+<input type="email" name="email" placeholder="Email" class="form-control mb-2" required>
+<input type="password" name="password" placeholder="Password" class="form-control mb-2" required>
+<input type="password" name="confirm_password" placeholder="Confirm Password" class="form-control mb-2" required>
 
 <button class="btn btn-primary">Register</button>
 
 </form>
-
-<p class="mt-3">
-Already have an account? <a href="login.php">Login here</a>
-</p>
-
 </div>
 
-<?php include("../includes/footer.php"); ?>
+
+
+
+
+
+<--clean header-->
+<?php
+session_start();
+include("db.php");     ?>
+<?php if(isset($_SESSION['user'])){ ?>
+
+<li class="nav-item">
+    <span class="nav-link">Hello, <?php echo $_SESSION['user']['name']; ?></span>
+</li>
+
+<li class="nav-item">
+    <a href="account.php" class="nav-link">My Account</a>
+</li>
+
+<li class="nav-item">
+    <a href="auth/logout.php" class="nav-link">Logout</a>
+</li>
+
+<?php } else { ?>
+
+<li class="nav-item">
+    <a href="auth/login.php" class="nav-link">Login</a>
+</li>
+
+<?php } ?>
+
+
+
+<--dropdown header-->
+<li class="nav-item dropdown">
+
+<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+<?php echo $_SESSION['user']['name']; ?>
+</a>
+
+<ul class="dropdown-menu">
+<li><a class="dropdown-item" href="account.php">My Account</a></li>
+<li><a class="dropdown-item" href="auth/logout.php">Logout</a></li>
+</ul>
+
+</li>
 
 
 
 
 
 
-<-login->
+<--login role-->
 <?php
 session_start();
 include("../includes/db.php");
@@ -837,19 +316,22 @@ if($result->num_rows > 0){
 
     $user = $result->fetch_assoc();
 
-    // VERIFY PASSWORD
     if(password_verify($password, $user['password'])){
 
+        // SAVE SESSION
         $_SESSION['user'] = $user;
 
-        // REDIRECT BASED ON ROLE
+        // ROLE REDIRECT
         if($user['role'] == "admin"){
             header("Location: ../admin/dashboard.php");
-        } elseif($user['role'] == "supplier"){
+        } 
+        elseif($user['role'] == "supplier"){
             header("Location: ../supplier/supplier.php");
-        } else {
+        } 
+        else {
             header("Location: ../index.php");
         }
+
         exit();
 
     } else {
@@ -857,12 +339,10 @@ if($result->num_rows > 0){
     }
 
 } else {
-    $message = "No account found. Please register.";
+    $message = "Account not found. Please register.";
 }
 }
 ?>
-
-<?php include("../includes/header.php"); ?>
 
 <div class="container mt-4">
 <h2>Login</h2>
@@ -879,360 +359,485 @@ if($result->num_rows > 0){
 
 </form>
 
-<p class="mt-3">
-Don't have an account? <a href="register.php">Register here</a>
-</p>
+<p>Don't have an account? <a href="register.php">Register</a></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+<--orders-->
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    total DECIMAL(10,2),
+    address VARCHAR(255),
+    discount INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+
+
+
+<--receipt-->
+CREATE TABLE order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    price DECIMAL(10,2)
+);
+
+
+
+
+
+
+
+
+<--account-->
+<?php
+session_start();
+include("includes/db.php");
+
+// PROTECT PAGE
+if(!isset($_SESSION['user'])){
+    header("Location: auth/login.php");
+    exit();
+}
+
+$user_id = $_SESSION['user']['id'];
+?>
+
+<div class="container mt-4">
+<h2>My Account</h2>
+
+<p>Welcome, <?php echo $_SESSION['user']['name']; ?></p>
+
+<a href="auth/logout.php" class="btn btn-danger mb-3">Logout</a>
+
+<h3>Order History</h3>
+
+<table class="table table-bordered">
+<tr>
+<th>Order ID</th>
+<th>Date</th>
+<th>Total</th>
+<th>Details</th>
+</tr>
+
+<?php
+$result = $conn->query("SELECT * FROM orders WHERE user_id=$user_id ORDER BY created_at DESC");
+
+if($result->num_rows > 0){
+
+while($order = $result->fetch_assoc()){
+?>
+
+<tr>
+<td><?php echo $order['id']; ?></td>
+<td><?php echo $order['created_at']; ?></td>
+<td>£<?php echo $order['total']; ?></td>
+<td><a href="order_details.php?id=<?php echo $order['id']; ?>" class="btn btn-primary btn-sm">View</a></td>
+</tr>
+
+<?php } } else { ?>
+
+<tr>
+<td colspan="4">No orders yet</td>
+</tr>
+
+<?php } ?>
+
+</table>
 
 </div>
 
-<?php include("../includes/footer.php"); ?>
 
 
 
-<-logout->
+<--receipt-->
 <?php
 session_start();
-session_destroy();
+include("includes/db.php");
 
-header("Location: ../index.php");
+if(!isset($_SESSION['user'])){
+    header("Location: auth/login.php");
+    exit();
+}
+
+$order_id = $_GET['id'];
+?>
+
+<div class="container mt-4">
+<h2>Order Details</h2>
+
+<table class="table">
+<tr>
+<th>Product</th>
+<th>Quantity</th>
+<th>Price</th>
+</tr>
+
+<?php
+$result = $conn->query("SELECT * FROM order_items WHERE order_id=$order_id");
+
+while($item = $result->fetch_assoc()){
+
+$product = $conn->query("SELECT name FROM products WHERE id=".$item['product_id'])->fetch_assoc();
+?>
+
+<tr>
+<td><?php echo $product['name']; ?></td>
+<td><?php echo $item['quantity']; ?></td>
+<td>£<?php echo $item['price']; ?></td>
+</tr>
+
+<?php } ?>
+
+</table>
+
+</div>
+
+
+
+
+
+<--payment_order.php-->
+<?php session_start();  
+$user_id = $_SESSION['user']['id'];
 ?>
 
 
 
-<-header update->
-<?php if(isset($_SESSION['user'])){ ?>
-
-<li class="nav-item">
-<a class="nav-link">Hello, <?php echo $_SESSION['user']['name']; ?></a>
-</li>
-
-<li class="nav-item">
-<a href="auth/logout.php" class="nav-link">Logout</a>
-</li>
-
-<?php } else { ?>
-
-<li class="nav-item">
-<a href="auth/login.php" class="nav-link">Login</a>
-</li>
-
-<?php } ?>
 
 
--------
-------
-------
 
-assets/css/style.css
-body {
-    background-color: #f8f9fa;
-}
+<--enquiry-->
+CREATE TABLE enquiries (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-.card {
-    border-radius: 10px;
-}
 
-.navbar-brand {
-    font-weight: bold;
-}
 
-.btn {
-    border-radius: 8px;
-}
 
-h2 {
-    font-weight: 600;
-}
 
-.badge {
-    font-size: 0.8rem;
-}
-1. SHOP PAGE (Products + Availability)
+<--contact-->
+<?php include("includes/header.php"); ?>
+
 <div class="container mt-4">
-<h2>Farm Products</h2>
+<h2>Contact Us</h2>
 
-<div class="row">
+<form action="save_enquiry.php" method="POST">
 
-<!-- Product Card -->
-<div class="col-md-3 mb-4">
-<div class="card h-100">
+<input type="text" name="name" placeholder="Your Name" class="form-control mb-3" required>
 
-<img src="assets/images/apple.jpg" class="card-img-top">
+<input type="email" name="email" placeholder="Your Email" class="form-control mb-3" required>
 
-<div class="card-body d-flex flex-column">
+<textarea name="message" placeholder="Your Enquiry" class="form-control mb-3" required></textarea>
 
-<h5>Fresh Apples</h5>
-<p>£2.50</p>
-
-<p class="text-success">In Stock</p>
-
-<input type="number" value="1" min="1" max="100" class="form-control mb-2">
-
-<button class="btn btn-primary mt-auto">Add to Cart</button>
-
-</div>
-</div>
-</div>
-
-</div>
-</div>
- 2. DISCOUNT / REWARDS PAGE
-<div class="container mt-4">
-<h2>Loyalty Rewards</h2>
-
-<div class="row">
-
-<div class="col-md-4">
-<div class="card text-center p-3">
-<h4>10% Off</h4>
-<p>Cost: 100 Points</p>
-<button class="btn btn-success">Redeem</button>
-</div>
-</div>
-
-<div class="col-md-4">
-<div class="card text-center p-3">
-<h4>20% Off</h4>
-<p>Cost: 200 Points</p>
-<button class="btn btn-success">Redeem</button>
-</div>
-</div>
-
-</div>
-</div>
-3. CART PAGE
-<div class="container mt-4">
-<h2>Your Cart</h2>
-
-<table class="table table-bordered">
-<tr>
-<th>Product</th>
-<th>Price</th>
-<th>Quantity</th>
-<th>Total</th>
-<th>Action</th>
-</tr>
-
-<tr>
-<td>Apples</td>
-<td>£2.50</td>
-<td>2</td>
-<td>£5.00</td>
-<td><button class="btn btn-danger">Remove</button></td>
-</tr>
-
-</table>
-
-<h4>Total: £5.00</h4>
-
-<a href="checkout.php" class="btn btn-success">Proceed to Checkout</a>
-</div>
- 4. CHECKOUT PAGE
-<div class="container mt-4">
-<h2>Checkout</h2>
-
-<form>
-
-<h5>Delivery Address</h5>
-<input type="text" class="form-control mb-3" placeholder="Enter address">
-
-<h5>Payment</h5>
-<input type="text" class="form-control mb-3" placeholder="Card Number">
-
-<h5>Loyalty Rewards</h5>
-<select class="form-control mb-3">
-<option>No Discount</option>
-<option>10% Off</option>
-<option>20% Off</option>
-</select>
-
-<button class="btn btn-primary">Place Order</button>
+<button class="btn btn-primary">Submit</button>
 
 </form>
 </div>
- 5. LOGIN PAGE
-<div class="container mt-4" style="max-width:500px;">
-<h2>Login</h2>
 
-<form>
+<?php include("includes/footer.php"); ?>
 
-<input type="email" class="form-control mb-3" placeholder="Email">
 
-<input type="password" class="form-control mb-3" placeholder="Password">
 
-<button class="btn btn-success w-100">Login</button>
 
-</form>
 
-<p class="mt-3">
-Don't have an account? <a href="register.php">Register</a>
-</p>
+<--save_enquiry.php-->
+<?php
+include("includes/db.php");
 
-</div>
- 6. REGISTER PAGE
-<div class="container mt-4" style="max-width:500px;">
-<h2>Register</h2>
 
-<form>
+if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-<input type="text" class="form-control mb-3" placeholder="Full Name">
+$name = $_POST['name'];
+$email = $_POST['email'];
+$message = $_POST['message'];
 
-<input type="email" class="form-control mb-3" placeholder="Email">
+// INSERT INTO DATABASE
+$stmt = $conn->prepare("INSERT INTO enquiries (name, email, message) VALUES (?, ?, ?)");
+$stmt->bind_param("sss", $name, $email, $message);
 
-<input type="password" class="form-control mb-3" placeholder="Password">
+if($stmt->execute()){
+    echo "<script>alert('Enquiry sent successfully!'); window.location='contact.php';</script>";
+} else {
+    echo "Error saving enquiry.";
+}
 
-<button class="btn btn-primary w-100">Register</button>
+}
 
-</form>
+if(empty($name) || empty($email) || empty($message)){
+    die("All fields are required");
+}
 
-</div>
- 7. ADMIN DASHBOARD PAGE
+
+
+<--accessibility-->
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Accessibility</a>
+
+<ul class="dropdown-menu">
+<li><button class="dropdown-item" onclick="toggleContrast()">High Contrast</button></li>
+<li><button class="dropdown-item" onclick="increaseText()">Increase Text</button></li>
+<li><button class="dropdown-item" onclick="decreaseText()">Decrease Text</button></li>
+<li><button class="dropdown-item" onclick="readPage()">Screen Reader</button></li>
+</ul>
+</li>
+
+
+
+
+
+<--script-->
+function toggleContrast(){
+    document.body.classList.toggle("high-contrast");
+}
+
+
+
+let currentSize = 16;
+
+function increaseText(){
+    currentSize += 2;
+    document.body.style.fontSize = currentSize + "px";
+}
+
+function decreaseText(){
+    currentSize -= 2;
+    document.body.style.fontSize = currentSize + "px";
+}
+
+
+
+
+
+document.addEventListener("keydown", function(e){
+
+    // Press "H" for contrast
+    if(e.key === "h"){
+        toggleContrast();
+    }
+
+    // Press "+" to zoom in
+    if(e.key === "+"){
+        increaseText();
+    }
+
+    // Press "-" to zoom out
+    if(e.key === "-"){
+        decreaseText();
+    }
+
+});
+
+
+
+<--style-->
+.high-contrast {
+    background-color: black !important;
+    color: white !important;
+}
+
+.high-contrast a {
+    color: yellow !important;
+}
+
+.high-contrast .card {
+    background-color: black;
+    color: white;
+}
+
+
+
+
+
+
+
+<--admin-->
+<?php
+session_start();
+include("../includes/db.php");
+
+// ONLY ADMIN ACCESS
+if(!isset($_SESSION['user']) || $_SESSION['user']['role'] != 'admin'){
+    header("Location: ../auth/login.php");
+    exit();
+}
+?>
+
+<?php
+
+// TOTAL USERS
+$users = $conn->query("SELECT COUNT(*) AS total FROM users")->fetch_assoc()['total'];
+
+// TOTAL ORDERS
+$orders = $conn->query("SELECT COUNT(*) AS total FROM orders")->fetch_assoc()['total'];
+
+// TOTAL SALES
+$sales = $conn->query("SELECT SUM(total) AS total FROM orders")->fetch_assoc()['total'];
+
+// LOW STOCK
+$lowStock = $conn->query("SELECT COUNT(*) AS total FROM products WHERE stock < 5")->fetch_assoc()['total'];
+
+?>
+
+
+
+
+<--admin-->
 <div class="container mt-4">
 <h2>Admin Dashboard</h2>
 
 <div class="row">
 
 <div class="col-md-3">
-<div class="card text-center p-3">
-<h4>Sales</h4>
-<p>£2,500</p>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card text-center p-3">
-<h4>Stock Low</h4>
-<p>5 Items</p>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card text-center p-3">
-<h4>Orders</h4>
-<p>120</p>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card text-center p-3">
+<div class="card p-3 text-center">
 <h4>Users</h4>
-<p>300</p>
+<p><?php echo $users; ?></p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card p-3 text-center">
+<h4>Orders</h4>
+<p><?php echo $orders; ?></p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card p-3 text-center">
+<h4>Sales (£)</h4>
+<p><?php echo $sales ? $sales : 0; ?></p>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card p-3 text-center">
+<h4>Low Stock</h4>
+<p><?php echo $lowStock; ?></p>
 </div>
 </div>
 
 </div>
 
-<h4 class="mt-4">Stock Table</h4>
 
-<table class="table">
+
+
+<h3 class="mt-4">Product Stock</h3>
+<table class="table table-bordered">
 <tr>
-<th>Product</th>
+<th>Name</th>
+<th>Price</th>
 <th>Stock</th>
 <th>Status</th>
 </tr>
 
+<?php
+$result = $conn->query("SELECT * FROM products");
+
+while($row = $result->fetch_assoc()){
+?>
+
 <tr>
-<td>Milk</td>
-<td>3</td>
-<td class="text-danger">Low</td>
+<td><?php echo $row['name']; ?></td>
+<td>£<?php echo $row['price']; ?></td>
+<td><?php echo $row['stock']; ?></td>
+<td>
+<?php if($row['stock'] < 5){ ?>
+<span class="text-danger">Low</span>
+<?php } else { ?>
+<span class="text-success">OK</span>
+<?php } ?>
+</td>
 </tr>
 
+<?php } ?>
 </table>
 
-</div>
-8. RECEIPT PAGE (UI ONLY)
-<div class="container mt-4">
-<div class="card p-4">
 
-<h2 class="text-center">Receipt</h2>
 
-<p><strong>Order ID:</strong> 101</p>
-<p><strong>Date:</strong> Today</p>
 
-<table class="table">
+<h3 class="mt-4">Recent Orders</h3>
+
+<table class="table table-bordered">
 <tr>
-<th>Product</th>
-<th>Qty</th>
-<th>Price</th>
+<th>Order ID</th>
+<th>User</th>
 <th>Total</th>
+<th>Date</th>
 </tr>
+
+<?php
+$result = $conn->query("
+SELECT orders.*, users.name 
+FROM orders 
+JOIN users ON orders.user_id = users.id 
+ORDER BY orders.created_at DESC
+LIMIT 5
+");
+
+while($row = $result->fetch_assoc()){
+?>
 
 <tr>
-<td>Apples</td>
-<td>2</td>
-<td>£2.50</td>
-<td>£5.00</td>
+<td><?php echo $row['id']; ?></td>
+<td><?php echo $row['name']; ?></td>
+<td>£<?php echo $row['total']; ?></td>
+<td><?php echo $row['created_at']; ?></td>
 </tr>
 
+<?php } ?>
 </table>
 
-<p><strong>Subtotal:</strong> £5.00</p>
-<p><strong>Discount:</strong> 10%</p>
-<h4><strong>Total: £4.50</strong></h4>
+
+
+
+
+<h3 class="mt-4">Customer Enquiries</h3>
+
+<table class="table table-bordered">
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Message</th>
+<th>Date</th>
+</tr>
+
+<?php
+$result = $conn->query("SELECT * FROM enquiries ORDER BY created_at DESC");
+
+while($row = $result->fetch_assoc()){
+?>
+
+<tr>
+<td><?php echo $row['name']; ?></td>
+<td><?php echo $row['email']; ?></td>
+<td><?php echo $row['message']; ?></td>
+<td><?php echo $row['created_at']; ?></td>
+</tr>
+
+<?php } ?>
+</table>
 
 </div>
-</div>
-
-
-
-----------
-
-function calculateTotal(){
-
-    let subtotal = parseFloat(document.getElementById("subtotal").innerText);
-    let discount = document.getElementById("discount").value;
-
-    let final = subtotal;
-
-    if(discount == "10"){
-        final = subtotal * 0.9;
-    }
-
-    if(discount == "20"){
-        final = subtotal * 0.8;
-    }
-
-    document.getElementById("finalTotal").innerText = final.toFixed(2);
-}
-
-
-
------high contrast-----
-
-function highContrast(){
-    document.body.style.background = "black";
-    document.body.style.color = "yellow";
-}
 
 
 
 
 
----------
-function increaseText(){
-    document.body.style.fontSize = "20px";
-}
-
-
----------
-document.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-        alert("You pressed Enter");
-    }
-});
-
-
----------
-
-<button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navMenu">
-<span class="navbar-toggler-icon"></span>
-</button>
-
-<div class="collapse navbar-collapse" id="navMenu">
-
-
--------
-fetch("search.php?q=" + query)
-
--------
-SELECT * FROM products WHERE name LIKE '%search%'
