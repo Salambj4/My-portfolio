@@ -96,12 +96,12 @@ h2 {
 
 @media (max-width: 768px) {
   img {
-    width: 150px;
+    width: 80%;
   }
 }
 
 @media (max-width: 480px) {
   img {
-    width: 100px;
+    width: 80%;
   }
 
