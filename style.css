@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -40,6 +44,24 @@ nav a:hover {
   color: aqua;
 }
 
+  
+ul {
+    list-style: square;
+    padding-left: 20px;
+}
+.contact {
+    max-width: 900px;
+    text-align: center;
+    margin: 20px;
+    border-radius: 12px;
+    margin-left: 200px;
+}
+.contact a {
+    color: #1e3a8a;
+    text-decoration: none;
+    font-weight: bold;
+}
+
 section {
   max-width: 900px;
   margin: 40px auto;
@@ -65,6 +87,12 @@ h2 {
   padding-bottom: 5px;
 }
 
+
+@media (max-width: 600px) {
+  section, .contact {
+  margin: 10px;
+  padding: 10px;
+}
 
 @media (max-width: 768px) {
   img {
