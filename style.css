@@ -49,8 +49,31 @@ section {
   box-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 
+section img{ 
+  display: flex;
+  flex-wrap: wrap;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 h2 {
   color: aqua;
   border-bottom: 2px solid #555;
   padding-bottom: 5px;
 }
+
+
+@media (max-width: 768px) {
+  img {
+    width: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  img {
+    width: 100px;
+  }
+
