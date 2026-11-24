@@ -1,114 +1,404 @@
+
+/* ==================================
+   PROFESSIONAL PORTFOLIO DESIGN
+   ================================== */
+
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #333; 
-  color: white; 
+.portfolio-home {
+    --background: #0b1120;
+    --card: #111b2e;
+    --primary: #60a5fa;
+    --text: #f1f5f9;
+    --muted: #a7b4c8;
+    --border: #263349;
+
+    margin: 0;
+    background: var(--background);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
 }
 
-header {
-  background-color: #000; 
-  color: aqua; 
-  text-align: center;
-  padding: 40px 20px;
+.portfolio-home * {
+    box-sizing: border-box;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 2.5rem;
-  color: azure; 
-}
-
-header p {
-  font-size: 1.2rem;
-  color: aqua;
-}
-
-nav {
-  margin-top: 15px;
-}
-
-nav a {
-  margin: 0 15px;
-  text-decoration: none;
-  color: lightblue;
-  font-weight: bold;
-}
-
-nav a:hover {
-  text-decoration: underline;
-  color: aqua;
-}
-
-  
-ul {
-    list-style: square;
-    padding-left: 20px;
-}
-.contact {
-    max-width: 900px;
-    text-align: center;
-    margin: 20px;
-    border-radius: 12px;
-    margin-left: 200px;
-}
-.contact a {
-    color: #1e3a8a;
+.portfolio-home a {
     text-decoration: none;
+    color: var(--primary);
+}
+
+.portfolio-home h1,
+.portfolio-home h2,
+.portfolio-home h3,
+.portfolio-home h4 {
+    color: var(--text);
+    line-height: 1.3;
+}
+
+.portfolio-home p,
+.portfolio-home li {
+    color: var(--muted);
+}
+
+.portfolio-home a:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 5px;
+}
+
+
+/* NAVIGATION */
+
+.portfolio-home .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 22px 7%;
+    background: #0b1120;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+
+.portfolio-home .logo {
+    font-size: 30px;
+    font-weight: 800;
+    color: white;
+}
+
+.portfolio-home .logo span {
+    color: var(--primary);
+}
+
+.portfolio-home nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+}
+
+.portfolio-home nav a {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0;
+    transition: color 0.2s;
+}
+
+.portfolio-home nav a:hover {
+    color: var(--primary);
+}
+
+
+/* MAIN SECTIONS */
+
+.portfolio-home main {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 6%;
+}
+
+.portfolio-home section {
+    padding: 65px 0;
+    margin: 0;
+    max-width: none;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+
+.portfolio-home .eyebrow {
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.portfolio-home .section-title {
+    font-size: 34px;
+    margin: 0 0 25px;
+}
+
+
+/* HERO SECTION */
+
+.portfolio-home .hero {
+    padding: 100px 0;
+}
+
+.portfolio-home .hero h1 {
+    font-size: clamp(38px, 6vw, 70px);
+    letter-spacing: -2px;
+    margin: 15px 0;
+}
+
+.portfolio-home .hero h1 span {
+    color: var(--primary);
+}
+
+.portfolio-home .hero h2 {
+    font-size: clamp(20px, 3vw, 32px);
+    font-weight: 500;
+    color: var(--muted);
+}
+
+.portfolio-home .hero-description {
+    max-width: 700px;
+    font-size: 17px;
+}
+
+.portfolio-home .availability {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    margin-top: 25px;
+    font-size: 13px;
+}
+
+.portfolio-home .status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #4ade80;
+}
+
+
+/* BUTTONS */
+
+.portfolio-home .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 25px;
+}
+
+.portfolio-home .btn {
+    display: inline-block;
+    padding: 12px 23px;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.2s;
+    text-align: center;
+}
+
+.portfolio-home .btn:hover {
+    transform: translateY(-2px);
+}
+
+.portfolio-home .primary {
+    background: #2563eb;
+    color: white;
+    border: 1px solid #2563eb;
+}
+
+.portfolio-home .primary:hover {
+    background: #1d4ed8;
+}
+
+.portfolio-home .secondary {
+    background: transparent;
+    border: 1px solid #475569;
+    color: var(--text);
+}
+
+.portfolio-home .secondary:hover {
+    background: #1e293b;
+}
+
+
+/* SKILL AND PROJECT CARDS */
+
+.portfolio-home .card-grid,
+.portfolio-home .project-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+    gap: 22px;
+}
+
+.portfolio-home .card {
+    background: var(--card);
+    padding: 26px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.portfolio-home .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary);
+}
+
+.portfolio-home .card h3 {
+    font-size: 20px;
+    margin-top: 0;
+}
+
+.portfolio-home .card p {
+    font-size: 14px;
+}
+
+.portfolio-home .project-number {
+    color: var(--primary);
+    letter-spacing: 2px;
+    font-size: 12px;
     font-weight: bold;
 }
 
-section {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 20px;
-  background-color: #222;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+.portfolio-home .project {
+    display: flex;
+    flex-direction: column;
 }
 
-section img{ 
-  display: flex;
-  flex-wrap: wrap;
+.portfolio-home .project ul {
+    padding-left: 20px;
+    font-size: 14px;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
+.portfolio-home .project li {
+    margin-bottom: 8px;
 }
 
-h2 {
-  color: aqua;
-  border-bottom: 2px solid #555;
-  padding-bottom: 5px;
+.portfolio-home .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 15px;
 }
 
+.portfolio-home .project .tags {
+    margin-top: auto;
+}
+
+.portfolio-home .tags span {
+    background: #1a2d4a;
+    color: #93c5fd;
+    font-size: 12px;
+    padding: 5px 11px;
+    border-radius: 5px;
+}
+
+
+/* EXPERIENCE AND EDUCATION */
+
+.portfolio-home .experience-card {
+    border-left: 3px solid var(--primary);
+    background: var(--card);
+    padding: 25px;
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 22px;
+}
+
+.portfolio-home .experience-card h3 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.portfolio-home .subtitle {
+    color: var(--primary);
+    font-size: 14px;
+}
+
+.portfolio-home .experience-card ul {
+    padding-left: 20px;
+}
+
+
+/* CONTACT */
+
+.portfolio-home .contact-section {
+    text-align: center;
+    padding: 80px 0;
+}
+
+.portfolio-home .contact-section p {
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.portfolio-home .contact-section .buttons {
+    justify-content: center;
+}
+
+
+/* FOOTER */
+
+.portfolio-home footer {
+    text-align: center;
+    background: var(--background);
+    padding: 25px 15px;
+    font-size: 13px;
+}
+
+
+/* MOBILE RESPONSIVENESS */
 
 @media (max-width: 600px) {
-  section, .contact {
-  margin: 10px;
-  padding: 10px;
-}
+
+    .portfolio-home .navbar {
+        flex-direction: column;
+        padding: 18px;
+    }
+
+    .portfolio-home nav {
+        justify-content: center;
+        gap: 12px 16px;
+    }
+
+    .portfolio-home nav a {
+        font-size: 13px;
+    }
+
+    .portfolio-home .hero {
+        padding: 60px 0;
+    }
+
+    .portfolio-home section {
+        padding: 40px 0;
+    }
+
+    .portfolio-home .section-title {
+        font-size: 28px;
+    }
+
+    .portfolio-home .card-grid,
+    .portfolio-home .project-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .portfolio-home .buttons {
+        flex-direction: column;
+    }
+
+    .portfolio-home .btn {
+        width: 100%;
+    }
 }
 
-@media (min-width: 768px) {
-  section .img {
-    width: 80%;
-  }
-  img {
-    width: 80%;
-  }
-}
 
-@media (min-width: 480px) {
- section .img {
-    width: 80%;
-  }
-  img {
-    width: 80%;
-  }
+/* ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    .portfolio-home *,
+    .portfolio-home *::before,
+    .portfolio-home *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+
+}
 
