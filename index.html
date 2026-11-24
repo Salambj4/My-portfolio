@@ -1,170 +1,442 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Salam Agbaje - Portfolio</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
+    <meta name="description"
+          content="Salam Agbaje - Aspiring Software Engineer with experience in full-stack development and IT support.">
+
+    <title>Salam Agbaje | Software Engineering Portfolio</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
+    <header class="navbar">
+        <a href="index.html" class="logo">SA<span>.</span></a>
 
-  <header>
-  <h1>Salam Agbaje</h1>
-  <p>Aspiring Software Engineer | IT Technician Experience | Problem Solver</p>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="certificates.html">Certificates</a>
-    <a href="videos.html">Videos</a>
-    <a href="projects.html">Projects</a>
-  </nav>
-</header>
+        <nav aria-label="Main navigation">
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="#projects">Projects</a>
+            <a href="#experience">Experience</a>
+            <a href="certificates.html">Certificates</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
 
-<script>
-function showFullName() {
-    alert("Hello, Welcome!");
-    var firstname = prompt("What is your first name?");
-    var lastname = prompt("What is your last name?");
-    alert("Welcome " + firstname + " " + lastname + " to my Portfolio page!");
-}
+    <main>
 
-// Calls the function automatically when the page loads up
-window.onload = showFullName;
-</script>
-  <section>
-    <h2>About Me</h2>
-    <p>I am a driven and adaptable individual with hands-on experience across IT support, retail operations, and security systems. My passion lies in technology, software engineering, and digital innovation, where I enjoy turning ideas into practical solutions. Through building websites, troubleshooting systems, and exploring emerging technologies, I aim to contribute to impactful digital advancements while growing in a professional environment.</p>
-    <p>My career goal, as for now, is to secure an apprenticeship where I can apply my technical knowledge, continue developing new skills, and contribute to innovative digital solutions within a forward-thinking organisation.</p>
-    <p>My Goal is to continue developing my programming skills and build more advanced, scalable applications while working towards a career in software engineering.</p>
-  </section>
+        <!-- HERO SECTION -->
 
+        <section class="hero">
+            <p class="eyebrow">ASPIRING SOFTWARE ENGINEER</p>
 
-  <section>
-    <h2>Key Skills</h2>
-    <ul>
-      <li>Full-stack web development</li>
-      <li>Skilled in IT troubleshooting, system configuration, and technical support to ensure smooth operations.</li>
-      <li>Web development experience with HTML, Python, CSS, JavaScript, and PHP, including building responsive and functional websites.</li>
-      <li>Effective communicator and collaborator, with proven teamwork and leadership abilities.</li>
-      <li>Highly adaptable with strong time-management skills, able to balance multiple priorities in dynamic environments.</li>
-      <li>Analytical problem-solver with a creative approach to overcoming challenges.</li>
-      <li>Database design and management (SQL)</li>
-      <li>Backend development with PHP</li>
-      <li>Problem-solving and system planning</li>
-      <li>Writing clean, well-documented and commented code</li>
-    </ul>
-  </section>
+            <h1>Hi, I'm <span>Salam Agbaje.</span></h1>
 
+            <h2>I build software and solve technical problems.</h2>
 
-  <section>
-    <h2>Experience & Projects</h2>
-    <h3>IT Support | Lowton High School (2024-2026)</h3>
-    <ul>
-      <li>Migrated systems from Windows 10 to 11, ensuring efficiency and security</li>
-      <li>Provided technical support for teachers and students</li>
-      <li>Managed the school’s website and social media updates</li>
-      <li>Planned and scheduled meetings with companies, for example, CCTV company</li>
-    </ul>
+            <p class="hero-description">
+                T Level Digital Production, Design and Development
+                graduate with practical experience in full-stack web
+                development, database design and IT support.
+                Currently seeking a Level 6 Digital and Technology
+                Solutions Degree Apprenticeship.
+            </p>
 
-    <h3>Store Member & Security Support | Wigan Council Depot (2023)</h3>
-    <ul>
-      <li>Supported store operations and deliveries</li>
-      <li>Monitored CCTV and managed vehicle barriers</li>
-      <li>Earned certificate for outstanding team work</li>
-      <li>Inspect the site, both exterior and interior</li>
-    </ul>
-  </section>
-  
+            <div class="buttons">
+                <a href="#projects" class="btn primary">
+                    Explore My Projects
+                </a>
 
-  <section>
-    <h2>Education</h2>
-    <h3>Wigan and Leigh College (2024-2026)</h3>
-    <p><strong>Key SKill:</strong></p>
-    <ul>
-      <li>Web design & development, Programming, Database development, UX/UI Design, & Development,</li>
-      <li>Project Planning with Algorithms(Flowchart, Data Flow diagrams, ARD diagrams, Hierarchy diagrams),</li>
-      <li>Creating, reading and manipulating Feedback(Qualitative & Quantitative data, Graphs, Excel)</li>
-    </ul>
-    <h3>Dean Trust Rose Bridge (2019–2024)</h3>
-   
-      <p>GCSEs Results: Mathematics (5), English Literature (5), Science (5-4), IT (Level 2 Merit)</p> 
-   
-  </section>
+                <a href="https://github.com/Salambj4"
+                   class="btn secondary"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    View GitHub
+                </a>
+            </div>
+
+            <div class="availability">
+                <span class="status-dot"></span>
+                Seeking apprenticeship opportunities
+            </div>
+        </section>
 
 
-<section>
-  <h2>Projects</h2>
-  <h3>Farmer Retail Management System (Full-Stack Project)</h3>
-  <p><storng>Key Features:</storng></p>
-    <ul>
-      <li>User authentication system (register, login, logout)</li>
-      <li>Role-based access (Admin, Staff, Supplier, Customer)</li>
-      <li>SQL database integration to manage users and data</li>
-      <li>Order history tracking for users</li>
-      <li>Shopping cart with add/remove functionality and checkout system</li>
-      <li>Loyalty/discount system applied during checkout</li>
-      <li>Accessibility Features for different users</li>
-      <li>Contact form for customer enquiries</li>
-  </ul>
-<p><storng>Admin Dashboard Includes:</storng></p>
-  <ul>
-      <li>Product and stock management</li>
-      <li>Product availability and expiration tracking</li>
-      <li>Supplier and delivery management</li>
-      <li>Payment records</li>
-      <li>Staff data management</li>
-  </ul>
-  <hr>
-  <h3>Retail Coffee Shop Website</h3>
-  <p><storng>Key Features:</storng></p>
-    <ul>
-      <li>Designed and developed a fully responsive e-commerce website</li>
-      <li>Implemented user authentication system (registration, login, logout)</li>
-      <li>Displays products with images, names, prices, and availability</li>
-      <li>Built a shopping cart system (add/remove items, automatic total calculation)</li>
-      <li>Integrated checkout functionality for completing orders</li>
-      <li>Connected to a SQL database to store user and product data</li>
-      <li>Ensured users can securely access their accounts and session data</li>
-      <li>Created a clean and user-friendly interface for smooth navigation</li>
-      <li>Optimised layout for mobile, tablet, and desktop devices</li>
-      <li>Optimised layout for mobile, tablet, and desktop devices</li>
-      <li>Applied structured and well-documented code for maintainability</li>
-  </ul>
-  <hr>
-  <h3>Carbon Footprint Website</h3>
-  <p><storng>Key Features:</storng></p>
-    <ul>
-      <li>Implemented Consultation booking forms for Solar System, Electric charging, and Smart Home Management installation</li>
-      <li>Implemented date and time validation to prevent double bookings</li>
-      <li>Developed a responsive website focused on environmental awareness</li>
-      <li>Implemented user authentication system (registration, login, logout)</li>
-      <li>Designed clear and structured pages to explain carbon footprint concepts</li>
-      <li>Created a consistent and modern UI design across all pages</li>
-      <li>Organised content logically to guide users through information step-by-step</li>
-      <li>Ensured responsiveness across different screen sizes and devices</li>
-      <li>Created a clean and user-friendly interface for smooth navigation</li>
-      <li>Applied clean coding practices and proper file structure</li>
-      <li>Demonstrated ability to build informative platforms, not just e-commerce systems</li>
-      <li>Optimised layout for mobile, tablet, and desktop devices</li>
-      <li>Applied structured and well-documented code for maintainability</li>
-  </ul>
-</section>
-</section>
-  
-  <section>
-    <h2>Contact</h2>
-    <p>Email: <a href="mailto:Salambolaji01@gmail.com">Salambolaji01@gmail.com</a></p>
-    <p>Phone: 07456657128</p>
-    <form>
-  <input type="text" name="name" placeholder="Your Name" required>
-  <input type="email" name="email" placeholder="Your Email" required>
-      <br><br>
-  <textarea name="message" placeholder="Your Message" required></textarea>
-      <br><br>
-  <button type="submit">Send</button>
-</form>
-  </section>
+        <!-- ABOUT ME -->
+
+        <section id="about">
+            <p class="eyebrow">01 / INTRODUCTION</p>
+            <h2 class="section-title">About Me</h2>
+
+            <p>
+                I am an aspiring software engineer with a strong
+                interest in programming, problem-solving and digital
+                innovation. My experience includes developing
+                database-driven applications and providing technical
+                support in a professional educational environment.
+            </p>
+
+            <p>
+                Through my education and practical experience,
+                I have developed an understanding of software
+                development, system design, application testing
+                and user-centred solutions.
+            </p>
+
+            <p>
+                My ambition is to develop reliable, accessible
+                and secure software that solves real-world problems
+                while continuously improving my technical knowledge.
+            </p>
+        </section>
+
+
+        <!-- TECHNICAL SKILLS -->
+
+        <section id="skills">
+
+            <p class="eyebrow">02 / CAPABILITIES</p>
+            <h2 class="section-title">Technical Skills</h2>
+
+            <div class="card-grid">
+
+                <article class="card">
+                    <h3>Frontend Development</h3>
+                    <p>
+                        Responsive interfaces, web accessibility
+                        and user-centred design.
+                    </p>
+
+                    <div class="tags">
+                        <span>HTML</span>
+                        <span>CSS</span>
+                        <span>JavaScript</span>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <h3>Backend Development</h3>
+                    <p>
+                        Database-connected applications,
+                        authentication and data processing.
+                    </p>
+
+                    <div class="tags">
+                        <span>PHP</span>
+                        <span>SQL</span>
+                        <span>Python Fundamentals</span>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <h3>Software Engineering</h3>
+                    <p>
+                        Breaking down requirements, planning
+                        solutions and evaluating functionality.
+                    </p>
+
+                    <div class="tags">
+                        <span>Algorithms</span>
+                        <span>Testing</span>
+                        <span>Flowcharts</span>
+                        <span>Debugging</span>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <h3>IT Infrastructure</h3>
+                    <p>
+                        Technical troubleshooting, system
+                        configuration and user support.
+                    </p>
+
+                    <div class="tags">
+                        <span>Microsoft 365</span>
+                        <span>Windows</span>
+                        <span>IT Support</span>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+
+        <!-- PROJECTS -->
+
+        <section id="projects">
+
+            <p class="eyebrow">03 / SELECTED WORK</p>
+            <h2 class="section-title">Featured Projects</h2>
+
+            <div class="project-grid">
+
+                <article class="card project">
+                    <p class="project-number">PROJECT 01</p>
+
+                    <h3>Farmer Retail Management System</h3>
+
+                    <p>
+                        A full-stack retail management application
+                        designed to manage products, customers,
+                        suppliers and stock.
+                    </p>
+
+                    <h4>Key functionality</h4>
+
+                    <ul>
+                        <li>User registration and authentication</li>
+                        <li>Role-based user access</li>
+                        <li>Stock and supplier management</li>
+                        <li>Shopping cart and checkout</li>
+                        <li>Order history and SQL integration</li>
+                    </ul>
+
+                    <div class="tags">
+                        <span>Full-Stack</span>
+                        <span>SQL</span>
+                        <span>Authentication</span>
+                    </div>
+
+                </article>
+
+
+                <article class="card project">
+
+                    <p class="project-number">PROJECT 02</p>
+
+                    <h3>Retail Coffee Shop Website</h3>
+
+                    <p>
+                        A responsive e-commerce application
+                        designed to provide customers with
+                        a straightforward online shopping experience.
+                    </p>
+
+                    <h4>Key functionality</h4>
+
+                    <ul>
+                        <li>User account management</li>
+                        <li>Product catalogue</li>
+                        <li>Shopping cart functionality</li>
+                        <li>Automatic price calculations</li>
+                        <li>Database-connected checkout</li>
+                    </ul>
+
+                    <div class="tags">
+                        <span>E-Commerce</span>
+                        <span>SQL</span>
+                        <span>Responsive Design</span>
+                    </div>
+
+                </article>
+
+
+                <article class="card project">
+
+                    <p class="project-number">PROJECT 03</p>
+
+                    <h3>Carbon Footprint Website</h3>
+
+                    <p>
+                        A sustainability-focused web application
+                        designed to raise environmental awareness
+                        and support consultation bookings.
+                    </p>
+
+                    <h4>Key functionality</h4>
+
+                    <ul>
+                        <li>Consultation booking system</li>
+                        <li>Date and time validation</li>
+                        <li>User registration and login</li>
+                        <li>Environmental information pages</li>
+                        <li>Responsive user interface</li>
+                    </ul>
+
+                    <div class="tags">
+                        <span>Sustainability</span>
+                        <span>Validation</span>
+                        <span>Web Development</span>
+                    </div>
+
+                </article>
+
+            </div>
+
+            <div class="buttons">
+                <a href="projects.html" class="btn primary">
+                    View More Project Work
+                </a>
+
+                <a href="videos.html" class="btn secondary">
+                    Watch Demonstrations
+                </a>
+            </div>
+
+        </section>
+
+
+        <!-- PROFESSIONAL EXPERIENCE -->
+
+        <section id="experience">
+
+            <p class="eyebrow">04 / PROFESSIONAL BACKGROUND</p>
+            <h2 class="section-title">Work Experience</h2>
+
+            <article class="experience-card">
+
+                <h3>IT Support Technician</h3>
+                <p class="subtitle">Lowton High School</p>
+
+                <ul>
+                    <li>
+                        Diagnosed hardware, software and
+                        connectivity issues.
+                    </li>
+
+                    <li>
+                        Provided technical support to staff and students.
+                    </li>
+
+                    <li>
+                        Collaborated within an IT team to migrate
+                        computer systems from Windows 10 to Windows 11.
+                    </li>
+
+                    <li>
+                        Configured and tested computer equipment.
+                    </li>
+
+                    <li>
+                        Prioritised technical support requests
+                        to minimise operational disruption.
+                    </li>
+                </ul>
+
+            </article>
+
+            <article class="experience-card">
+
+                <h3>Store Team Member</h3>
+                <p class="subtitle">Wigan Council - Makerfield Depot</p>
+
+                <ul>
+                    <li>
+                        Supported stock management and daily operations.
+                    </li>
+
+                    <li>
+                        Collaborated with colleagues to maintain
+                        an organised working environment.
+                    </li>
+
+                    <li>
+                        Demonstrated reliability, teamwork
+                        and attention to detail.
+                    </li>
+                </ul>
+
+            </article>
+
+        </section>
+
+
+        <!-- EDUCATION -->
+
+        <section id="education">
+
+            <p class="eyebrow">05 / QUALIFICATIONS</p>
+            <h2 class="section-title">Education</h2>
+
+            <article class="experience-card">
+
+                <h3>
+                    T Level - Digital Production,
+                    Design and Development
+                </h3>
+
+                <p class="subtitle">
+                    Wigan &amp; Leigh College | 2024–2026
+                </p>
+
+                <p>
+                    Studied software development, programming,
+                    relational databases, system design,
+                    project planning and application testing.
+                </p>
+
+            </article>
+
+            <article class="experience-card">
+
+                <h3>GCSE Qualifications</h3>
+
+                <p class="subtitle">
+                    Dean Trust Rose Bridge | 2019–2024
+                </p>
+
+                <p>
+                    Mathematics (5), English Language (4),
+                    English Literature (5), Combined Science (5–4)
+                    and IT (Level 2 Merit).
+                </p>
+
+            </article>
+
+            <a href="certificates.html" class="btn secondary">
+                View Certificates
+            </a>
+
+        </section>
+
+
+        <!-- CONTACT -->
+
+        <section id="contact" class="contact-section">
+
+            <p class="eyebrow">06 / GET IN TOUCH</p>
+            <h2 class="section-title">Let's Connect</h2>
+
+            <p>
+                I am currently interested in software engineering
+                and digital technology apprenticeship opportunities.
+                I welcome conversations about technology,
+                professional development and collaboration.
+            </p>
+
+            <div class="buttons">
+
+                <a href="mailto:Salambolaji01@gmail.com"
+                   class="btn primary">
+                    Email Me
+                </a>
+
+                <a href="https://github.com/Salambj4"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="btn secondary">
+                    GitHub Profile
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>
+            &copy; 2026 Salam Agbaje.
+            Designed and developed with HTML and CSS.
+        </p>
+    </footer>
 
 </body>
 </html>
